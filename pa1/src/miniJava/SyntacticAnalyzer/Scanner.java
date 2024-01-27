@@ -20,7 +20,7 @@ public class Scanner {
 		this._currentText = new StringBuilder();
 		
 		nextChar();
-		
+		_tokenization.add(scan());
 	}
 
 	private void tokenize()
@@ -81,7 +81,7 @@ public class Scanner {
 		return toReturn;
 	}
 
-	public Token getToken(int i)
+	public Token lookAhead(int i)
 	{
 		if(_tokenization.size() < i-1){
 			while(_tokenization.size() < i-1)
@@ -90,5 +90,19 @@ public class Scanner {
 			}
 		}
 		return _tokenization.get(i);
+	}
+
+	public Token getCurrentToken()
+	{
+		return _tokenization.get(0);
+	}
+
+	public void acceptToken()
+	{
+		_tokenization.poll();
+		if(_tokenization.size() == 0)
+		{
+			_tokenization.add(scan());
+		}
 	}
 }

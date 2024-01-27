@@ -11,7 +11,7 @@ public class Parser {
 	public Parser( Scanner scanner, ErrorReporter errors ) {
 		this._scanner = scanner;
 		this._errors = errors;
-		this._currentToken = this._scanner.getToken(_currentIndex);
+		this._currentToken = this._scanner.getCurrentToken();
 	}
 	
 	class SyntaxError extends Error {
@@ -264,8 +264,8 @@ public class Parser {
 	//  Can be useful if you want to error check and accept all-in-one.
 	private void accept(TokenType expectedType) throws SyntaxError {
 		if( _currentToken.getTokenType() == expectedType ) {
-			_currentIndex += 1;
-			_currentToken = _scanner.getToken(_currentIndex);
+			_scanner.acceptToken();
+			_currentToken = _scanner.getCurrentToken();
 			return;
 		}
 		
@@ -277,7 +277,7 @@ public class Parser {
 	}
 
 	private Token lookAhead(int i) {
-		return _scanner.getToken(_currentIndex + i);
+		return _scanner.lookAhead(i);
 	}
 
 	private boolean isBinop(Token t)
