@@ -41,15 +41,17 @@ public class Parser {
 		accept(TokenType.LBRACE);
 		while(_currentToken.getTokenType() != TokenType.RBRACE)
 		{
+			boolean acceptedVoid = false;
 			parseVisibility();
 			parseAccess();
 			if(_currentToken.getTokenType() == TokenType.VOID)
 			{
 				accept(TokenType.VOID);
+				acceptedVoid = true;
 			}else{
 				parseType();
 			}
-			if(lookAhead(1).getTokenType() == TokenType.SEMICOLON)
+			if(lookAhead(1).getTokenType() == TokenType.SEMICOLON && !acceptedVoid)
 			{
 				parseFieldDec();
 			}else
@@ -176,6 +178,7 @@ public class Parser {
 	{
 		if(_currentToken.getTokenType() == TokenType.WHILE)
 		{
+			accept(TokenType.WHILE);
 			accept(TokenType.LPAREN);
 			parseExpression();
 			accept(TokenType.RPAREN);
