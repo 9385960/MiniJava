@@ -226,6 +226,8 @@ public class Parser {
 					{
 						parseTypeStatement();
 					}
+				}else{
+					parseReferenceStatement();
 				}
 			}else{
 				parseReferenceStatement();
