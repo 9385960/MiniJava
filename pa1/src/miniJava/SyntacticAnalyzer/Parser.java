@@ -43,7 +43,7 @@ public class Parser {
 		{
 			parseVisibility();
 			parseAccess();
-			if(lookAhead(3).getTokenType() == TokenType.SEMICOLON)
+			if(lookAhead(2).getTokenType() == TokenType.SEMICOLON)
 			{
 				parseFieldDec();
 			}else
