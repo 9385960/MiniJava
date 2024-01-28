@@ -193,9 +193,10 @@ public class Scanner {
 			return makeToken(TokenType.OPERATOR);
 		}
 		else{
-			_errors.reportError("Unkown letter encountered");
+			//_errors.reportError("Unknown letter encountered");
+			skipIt();
+			return scan();
 		}
-		return null;
 	}
 
 	private Token checkString()
