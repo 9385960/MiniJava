@@ -36,7 +36,7 @@ public class Scanner {
 			_endOfToken = true;
 			return makeToken(TokenType.EOT);
 		}
-		while(Character.isWhitespace(_currentChar))
+		while(Character.isWhitespace(_currentChar)||Character.isISOControl(_currentChar))
 		{
 			skipIt();
 		}
@@ -193,10 +193,9 @@ public class Scanner {
 			return makeToken(TokenType.OPERATOR);
 		}
 		else{
-			//_errors.reportError("Unknown letter encountered");
-			skipIt();
-			return scan();
+			_errors.reportError("Unknown letter encountered");
 		}
+		return null;
 	}
 
 	private Token checkString()
