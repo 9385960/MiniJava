@@ -193,6 +193,11 @@ public class Scanner {
 			return makeToken(TokenType.OPERATOR);
 		}
 		else{
+			if(_endOfDocument)
+			{
+				skipIt();
+				return makeToken(TokenType.EOT);
+			}
 			_errors.reportError("Unknown letter encountered");
 		}
 		return null;
@@ -244,11 +249,11 @@ public class Scanner {
 				_endOfDocument = true;
 			}
 			// TODO: What happens if c is not a regular ASCII character?
-			/*if(!Character.isDefined(c))
+			if((int) c < 0 || (int)c > 127)
 			{
 				//TODO: make error
-				throw new IOException();
-			}*/
+				//throw new IOException();
+			}
 		} catch( IOException e ) {
 			// TODO: Report an error here
 			_errors.reportError("Character could not be read");
