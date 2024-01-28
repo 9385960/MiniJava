@@ -62,7 +62,7 @@ public class Scanner {
 				skipIt();
 				boolean foundStar = false;
 				boolean foundSlash = false;
-				while(!foundStar && !foundSlash)
+				while(!foundStar || !foundSlash)
 				{
 					if(_currentChar == '/' && foundStar)
 					{
@@ -77,7 +77,7 @@ public class Scanner {
 							foundStar = false;
 						}
 					}
-					
+					skipIt();
 				}
 				_currentText.delete(0, _currentText.length());
 				return scan();
