@@ -6,7 +6,6 @@ public class Parser {
 	private Scanner _scanner;
 	private ErrorReporter _errors;
 	private Token _currentToken;
-	private int _currentIndex = 0;
 	
 	public Parser( Scanner scanner, ErrorReporter errors ) {
 		this._scanner = scanner;
@@ -42,7 +41,9 @@ public class Parser {
 		accept(TokenType.LBRACE);
 		while(_currentToken.getTokenType() != TokenType.RBRACE)
 		{
-			if(lookAhead(5).getTokenType() == TokenType.SEMICOLON)
+			parseVisibility();
+			parseAccess();
+			if(lookAhead(3).getTokenType() == TokenType.SEMICOLON)
 			{
 				parseFieldDec();
 			}else
@@ -56,8 +57,6 @@ public class Parser {
 	// FieldDeclaration ::= Visiblity Access Type id;
 	private void parseFieldDec()
 	{
-		parseVisibility();
-		parseAccess();
 		parseType();
 		accept(TokenType.ID);
 		accept(TokenType.SEMICOLON);
@@ -66,8 +65,6 @@ public class Parser {
 	//MethodDeclaration ::= Visibility Access (Type|void) id ( ParameterList? ) {Statement*}
 	private void parseMethodDec()
 	{
-		parseVisibility();
-		parseAccess();
 		if(_currentToken.getTokenType() == TokenType.VOID)
 		{
 			accept(TokenType.VOID);
@@ -165,7 +162,7 @@ public class Parser {
 		if(_currentToken.getTokenType() == TokenType.THIS)
 		{
 			accept(TokenType.THIS);
-		}else if(_currentToken.getTokenType() == TokenType.ID)
+		}else
 		{
 			accept(TokenType.ID);
 		}
@@ -213,7 +210,62 @@ public class Parser {
 			}
 			accept(TokenType.RBRACE);
 		}else{
+			if(_currentToken.getTokenType() == TokenType.BOOLEAN || _currentToken.getTokenType() == TokenType.INT)
+			{
+				parseTypeStatement();
+			}else if(_currentToken.getTokenType() == TokenType.ID)
+			{
+				TokenType ahead = _scanner.lookAhead(1).getTokenType();
+				if(ahead == TokenType.ID)
+				{
+					parseTypeStatement();
+				}else if(ahead == TokenType.LBRACKET)
+				{
+					TokenType ahead2 = _scanner.lookAhead(2).getTokenType();
+					if(ahead2 == TokenType.RBRACKET)
+					{
+						parseTypeStatement();
+					}
+				}
+			}else{
+				parseReferenceStatement();
+			}
+		}
+	}
 
+	private void parseTypeStatement()
+	{
+		parseType();
+		accept(TokenType.ID);
+		accept(TokenType.EQUALS);
+		parseExpression();
+		accept(TokenType.SEMICOLON);
+	}
+
+	private void parseReferenceStatement()
+	{
+		parseReference();
+		if(_currentToken.getTokenType() == TokenType.EQUALS)
+		{
+			accept(TokenType.EQUALS);
+			parseExpression();
+			accept(TokenType.SEMICOLON);
+		}else if(_currentToken.getTokenType() == TokenType.LBRACKET)
+		{
+			accept(TokenType.LBRACKET);
+			parseExpression();
+			accept(TokenType.RBRACKET);
+			accept(TokenType.EQUALS);
+			parseExpression();
+			accept(TokenType.SEMICOLON);
+		}else{
+			accept(TokenType.LPAREN);
+			if(_currentToken.getTokenType() != TokenType.RPAREN)
+			{
+				parseArgumentList();
+			}
+			accept(TokenType.RPAREN);
+			accept(TokenType.SEMICOLON);
 		}
 	}
 
@@ -248,7 +300,7 @@ public class Parser {
 		}else if(_currentToken.getTokenType() == TokenType.FALSE)
 		{
 			accept(TokenType.FALSE);
-		}else if(_currentToken.getTokenType() == TokenType.OPERATOR && !isBinop(_currentToken))
+		}else if(_currentToken.getTokenType() == TokenType.OPERATOR && isUnop(_currentToken))
 		{
 			accept(TokenType.OPERATOR);
 			parseExpression();
@@ -257,6 +309,28 @@ public class Parser {
 			accept(TokenType.LPAREN);
 			parseExpression();
 			accept(TokenType.RPAREN);
+		}else {
+			parseReference();
+			if(_currentToken.getTokenType() == TokenType.LBRACKET)
+			{
+				accept(TokenType.LBRACKET);
+				parseExpression();
+				accept(TokenType.RBRACKET);
+			}else if(_currentToken.getTokenType() == TokenType.LPAREN)
+			{
+				accept(TokenType.RPAREN);
+				if(_currentToken.getTokenType() != TokenType.RPAREN)
+				{
+					parseArgumentList();
+				}
+				accept(TokenType.RPAREN);
+			}
+		}
+
+		while(isBinop(_currentToken))
+		{
+			accept(TokenType.OPERATOR);
+			parseExpression();
 		}
 	}
 
@@ -282,6 +356,29 @@ public class Parser {
 
 	private boolean isBinop(Token t)
 	{
+		if(t.getTokenType() == TokenType.OPERATOR)
+		{
+			if(t.getTokenText().equals("!"))
+			{
+				return false;
+			}else{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isUnop(Token t)
+	{
+		if(t.getTokenType() == TokenType.OPERATOR)
+		{
+			if(t.getTokenText().equals("!") || t.getTokenText().equals("-"))
+			{
+				return true;
+			}else{
+				return false;
+			}
+		}
 		return false;
 	}
 }

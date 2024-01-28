@@ -13,39 +13,215 @@ public class Scanner {
 	private char _currentChar;
 	private LinkedList<Token> _tokenization = new LinkedList<Token>();
 	private boolean _endOfDocument = false;
+	private boolean _endOfToken = false;
+	private Map<String,TokenType> reservedWords = new HashMap<>();
 	
 	public Scanner( InputStream in, ErrorReporter errors ) {
 		this._in = in;
 		this._errors = errors;
 		this._currentText = new StringBuilder();
 		
+		initReservedWords();
 		nextChar();
 		_tokenization.add(scan());
 	}
 
-	private void tokenize()
+	private Token scan() {
+		if(_endOfToken)
+		{
+			return null;
+		}
+		if(_endOfDocument)
+		{
+			_endOfToken = true;
+			return makeToken(TokenType.EOT);
+		}
+		while(Character.isWhitespace(_currentChar))
+		{
+			skipIt();
+		}
+
+		if(Character.isDigit(_currentChar))
+		{
+			makeNum();
+			Token toReturn = makeToken(TokenType.NUM);
+			return toReturn;
+		}else if(_currentChar == '/')
+		{
+			takeIt();
+			if(_currentChar == '/')
+			{
+				while(_currentChar != '\n')
+				{
+					skipIt();
+				}
+				_currentText.delete(0, _currentText.length());
+				return scan();
+			}else if(_currentChar == '*')
+			{
+				skipIt();
+				boolean foundStar = false;
+				boolean foundSlash = false;
+				while(!foundStar && !foundSlash)
+				{
+					if(_currentChar == '/' && foundStar)
+					{
+						foundSlash = true;
+					}
+					if(_currentChar == '*')
+					{
+						foundStar = true;
+					}else{
+						if(foundStar && !foundSlash)
+						{
+							foundStar = false;
+						}
+					}
+					
+				}
+				_currentText.delete(0, _currentText.length());
+				return scan();
+			}else {
+				return makeToken(TokenType.OPERATOR);
+			}
+		}else if(Character.isLetter(_currentChar))
+		{
+			makeID();
+			return checkString();
+		}else if(_currentChar == '.')
+		{
+			takeIt();
+			return makeToken(TokenType.PERIOD);
+		}else if(_currentChar == '(')
+		{
+			takeIt();
+			return makeToken(TokenType.LPAREN);
+		}else if(_currentChar == ')')
+		{
+			takeIt();
+			return makeToken(TokenType.RPAREN);
+		}else if(_currentChar == '{')
+		{
+			takeIt();
+			return makeToken(TokenType.LBRACE);
+		}else if(_currentChar == '}')
+		{
+			takeIt();
+			return makeToken(TokenType.RBRACE);
+		}else if(_currentChar == '[')
+		{
+			takeIt();
+			return makeToken(TokenType.LBRACKET);
+		}else if(_currentChar == ']')
+		{
+			takeIt();
+			return makeToken(TokenType.RBRACKET);
+		}else if(_currentChar == ';')
+		{
+			takeIt();
+			return makeToken(TokenType.SEMICOLON);
+		}else if(_currentChar == ',')
+		{
+			takeIt();
+			return makeToken(TokenType.COMMA);
+		}else if(_currentChar == '=')
+		{
+			takeIt();
+			if(_currentChar == '=')
+			{
+				takeIt();
+				return makeToken(TokenType.OPERATOR);
+			}
+			return makeToken(TokenType.EQUALS);
+		}else if(_currentChar == '>')
+		{
+			takeIt();
+			if(_currentChar == '=')
+			{
+				takeIt();
+			}
+			return makeToken(TokenType.OPERATOR);
+		}
+		else if(_currentChar == '<')
+		{
+			takeIt();
+			if(_currentChar == '=')
+			{
+				takeIt();
+			}
+			return makeToken(TokenType.OPERATOR);
+		}
+		else if(_currentChar == '!')
+		{
+			takeIt();
+			if(_currentChar == '=')
+			{
+				takeIt();
+			}
+			return makeToken(TokenType.OPERATOR);
+		}else if(_currentChar == '&')
+		{
+			takeIt();
+			if(_currentChar == '&')
+			{
+				takeIt();
+			}else{
+				_errors.reportError("single & encountered 2 are required");
+			}
+			return makeToken(TokenType.OPERATOR);
+		}else if(_currentChar == '|')
+		{
+			takeIt();
+			if(_currentChar == '|')
+			{
+				takeIt();
+			}else{
+				_errors.reportError("single & encountered 2 are required");
+			}
+			return makeToken(TokenType.OPERATOR);
+		}else if(_currentChar == '+')
+		{
+			takeIt();
+			return makeToken(TokenType.OPERATOR);
+		}else if(_currentChar == '*')
+		{
+			takeIt();
+			return makeToken(TokenType.OPERATOR);
+		}else if(_currentChar == '-')
+		{
+			takeIt();
+			return makeToken(TokenType.OPERATOR);
+		}
+		else{
+			_errors.reportError("Unkown letter encountered");
+		}
+		return null;
+	}
+
+	private Token checkString()
 	{
-		while(!_endOfDocument){
-			_tokenization.add(scan());
+		if(reservedWords.containsKey(_currentText.toString()))
+		{
+			return makeToken(reservedWords.get(_currentText.toString()));
+		}else{
+			return makeToken(TokenType.ID);
 		}
 	}
-	
-	private Token scan() {
-		// TODO: This function should check the current char to determine what the token could be.
-		
-		// TODO: Consider what happens if the current char is whitespace
-		if(true)
-		{
 
+	private void makeID()
+	{
+		while(Character.isLetterOrDigit(_currentChar) || _currentChar == '_')
+		{
+			takeIt();
 		}
-		// TODO: Consider what happens if there is a comment (// or /* */)
-		
-		// TODO: What happens if there are no more tokens?
-		
-		// TODO: Determine what the token is. For example, if it is a number
-		//  keep calling takeIt() until _currentChar is not a number. Then
-		//  create the token via makeToken(TokenType.IntegerLiteral) and return it.
-		return null;
+	}
+
+	private void makeNum()
+	{
+		while(Character.isDigit(_currentChar))
+		{
+			takeIt();
+		}
 	}
 	
 	private void takeIt() {
@@ -68,33 +244,38 @@ public class Scanner {
 				_endOfDocument = true;
 			}
 			// TODO: What happens if c is not a regular ASCII character?
-			
+			/*if(!Character.isDefined(c))
+			{
+				//TODO: make error
+				throw new IOException();
+			}*/
 		} catch( IOException e ) {
 			// TODO: Report an error here
+			_errors.reportError("Character could not be read");
 		}
 	}
 	
 	private Token makeToken( TokenType toktype ) {
-		// TODO: return a new Token with the appropriate type and text
-		//  contained in 
 		Token toReturn = new Token(toktype,_currentText.toString());
+		_currentText.delete(0, _currentText.length());
 		return toReturn;
 	}
 
 	public Token lookAhead(int i)
 	{
-		if(_tokenization.size() < i-1){
-			while(_tokenization.size() < i-1)
+		if(_tokenization.size() < i+1){
+			while(_tokenization.size() < i+1 && !_endOfToken)
 			{
 				_tokenization.add(scan());
 			}
+			return _tokenization.getLast();
 		}
 		return _tokenization.get(i);
 	}
 
 	public Token getCurrentToken()
 	{
-		return _tokenization.get(0);
+		return _tokenization.getFirst();
 	}
 
 	public void acceptToken()
@@ -104,5 +285,23 @@ public class Scanner {
 		{
 			_tokenization.add(scan());
 		}
+	}
+
+	private void initReservedWords()
+	{
+		reservedWords.put("class", TokenType.CLASS);
+		reservedWords.put("while", TokenType.WHILE);
+		reservedWords.put("public", TokenType.PUBLIC);
+		reservedWords.put("private", TokenType.PRIVATE);
+		reservedWords.put("static", TokenType.STATIC);
+		reservedWords.put("this", TokenType.THIS);
+		reservedWords.put("return", TokenType.RETURN);
+		reservedWords.put("if", TokenType.IF);
+		reservedWords.put("else", TokenType.ELSE);
+		reservedWords.put("true", TokenType.TRUE);
+		reservedWords.put("false", TokenType.FALSE);
+		reservedWords.put("new", TokenType.NEW);
+		reservedWords.put("void",TokenType.VOID);
+		reservedWords.put("boolean", TokenType.BOOLEAN);
 	}
 }

@@ -42,4 +42,5 @@ public enum TokenType {
     VOID,
     COMMA,
     PERIOD,
+    EQUALS,
 }

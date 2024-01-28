@@ -1,23 +1,47 @@
 package miniJava;
 
+import java.io.FileInputStream;
+
+
+import miniJava.SyntacticAnalyzer.Parser;
+import miniJava.SyntacticAnalyzer.Scanner;
+
 public class Compiler {
 	// Main function, the file to compile will be an argument.
 	public static void main(String[] args) {
 		// TODO: Instantiate the ErrorReporter object
-		
+		ErrorReporter error = new ErrorReporter();
 		// TODO: Check to make sure a file path is given in args
-		
-		// TODO: Create the inputStream using new FileInputStream
-		
-		// TODO: Instantiate the scanner with the input stream and error object
-		
-		// TODO: Instantiate the parser with the scanner and error object
-		
-		// TODO: Call the parser's parse function
-		
-		// TODO: Check if any errors exist, if so, println("Error")
-		//  then output the errors
-		
-		// TODO: If there are no errors, println("Success")
+		if(args.length == 0)
+		{
+			error.reportError("File path not given");
+		}else{
+			// TODO: Create the inputStream using new FileInputStream
+			try{
+				FileInputStream stream = new FileInputStream(args[0]);
+				Scanner scan = new Scanner(stream,error);
+				Parser p = new Parser(scan, error);
+				p.parse();
+
+			}catch(Exception e){
+
+			}
+			// TODO: Instantiate the scanner with the input stream and error object
+			
+			// TODO: Instantiate the parser with the scanner and error object
+			
+			// TODO: Call the parser's parse function
+			
+			// TODO: Check if any errors exist, if so, println("Error")
+			//  then output the errors
+			
+			// TODO: If there are no errors, println("Success")
+		}
+		if(error.hasErrors())
+		{
+			error.outputErrors();
+		}else{
+			System.out.println("Compiled Succesfully");
+		}
 	}
 }

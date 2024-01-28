@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": "C:\\Users\\njauc.DESKTOP-3KFKN4I\\Documents\\School\\Comp_520\\MiniJava\\test.minijava"
+        },
+        {
+            "type": "java",
+            "name": "Compiler",
+            "request": "launch",
+            "mainClass": "miniJava.Compiler",
+            "projectName": "pa1"
+        }
+    ]
+}
