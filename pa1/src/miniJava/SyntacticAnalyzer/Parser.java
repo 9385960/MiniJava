@@ -346,7 +346,7 @@ public class Parser {
 		// TODO: Report an error here.
 		//  "Expected token X, but got Y"
 
-		_errors.reportError("Expected " + expectedType.name() + ", but got " + _currentToken.getTokenType().name() + "Instead" );
+		_errors.reportError("Expected " + expectedType.name() + ", but got " + _currentToken.getTokenType().name() + " Instead" );
 		throw new SyntaxError();
 	}
 

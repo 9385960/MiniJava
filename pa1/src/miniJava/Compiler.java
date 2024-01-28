@@ -39,9 +39,10 @@ public class Compiler {
 		}
 		if(error.hasErrors())
 		{
+			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			System.out.println("Compiled Succesfully");
+			System.out.println("Success");
 		}
 	}
 }
