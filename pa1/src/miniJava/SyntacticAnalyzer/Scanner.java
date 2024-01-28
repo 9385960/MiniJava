@@ -303,5 +303,6 @@ public class Scanner {
 		reservedWords.put("new", TokenType.NEW);
 		reservedWords.put("void",TokenType.VOID);
 		reservedWords.put("boolean", TokenType.BOOLEAN);
+		reservedWords.put("int",TokenType.INT);
 	}
 }

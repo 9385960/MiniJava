@@ -225,6 +225,8 @@ public class Parser {
 					if(ahead2 == TokenType.RBRACKET)
 					{
 						parseTypeStatement();
+					}else{
+						parseReferenceStatement();
 					}
 				}else{
 					parseReferenceStatement();
