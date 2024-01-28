@@ -204,6 +204,7 @@ public class Parser {
 			}
 		}else if(_currentToken.getTokenType() == TokenType.LBRACE)
 		{
+			accept(TokenType.LBRACE);
 			while(_currentToken.getTokenType() != TokenType.RBRACE)
 			{
 				parseStatement();

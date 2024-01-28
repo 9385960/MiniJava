@@ -51,7 +51,7 @@ public class Scanner {
 			takeIt();
 			if(_currentChar == '/')
 			{
-				while(_currentChar != '\n')
+				while(_currentChar != '\n' && _currentChar != '\r')
 				{
 					skipIt();
 				}
