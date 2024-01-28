@@ -43,7 +43,13 @@ public class Parser {
 		{
 			parseVisibility();
 			parseAccess();
-			if(lookAhead(2).getTokenType() == TokenType.SEMICOLON)
+			if(_currentToken.getTokenType() == TokenType.VOID)
+			{
+				accept(TokenType.VOID);
+			}else{
+				parseType();
+			}
+			if(lookAhead(1).getTokenType() == TokenType.SEMICOLON)
 			{
 				parseFieldDec();
 			}else
@@ -57,7 +63,6 @@ public class Parser {
 	// FieldDeclaration ::= Visiblity Access Type id;
 	private void parseFieldDec()
 	{
-		parseType();
 		accept(TokenType.ID);
 		accept(TokenType.SEMICOLON);
 	}
@@ -65,12 +70,6 @@ public class Parser {
 	//MethodDeclaration ::= Visibility Access (Type|void) id ( ParameterList? ) {Statement*}
 	private void parseMethodDec()
 	{
-		if(_currentToken.getTokenType() == TokenType.VOID)
-		{
-			accept(TokenType.VOID);
-		}else{
-			parseType();
-		}
 		accept(TokenType.ID);
 		accept(TokenType.LPAREN);
 		if(_currentToken.getTokenType() == TokenType.RPAREN)
