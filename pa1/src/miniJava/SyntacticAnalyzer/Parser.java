@@ -1,22 +1,22 @@
 package miniJava.SyntacticAnalyzer;
 
 import miniJava.ErrorReporter;
-
+//Class to parse the tokens
 public class Parser {
 	private Scanner _scanner;
 	private ErrorReporter _errors;
 	private Token _currentToken;
-	
+	//Makes a new parser with the required objects
 	public Parser( Scanner scanner, ErrorReporter errors ) {
 		this._scanner = scanner;
 		this._errors = errors;
 		this._currentToken = this._scanner.getCurrentToken();
 	}
-	
+	//Creates new error class
 	class SyntaxError extends Error {
 		private static final long serialVersionUID = -6461942006097999362L;
 	}
-	
+	//Attempts to parse
 	public void parse() {
 		try {
 			// The first thing we need to parse is the Program symbol
@@ -26,72 +26,100 @@ public class Parser {
 	
 	// Program ::= (ClassDeclaration)* eot
 	private void parseProgram() throws SyntaxError {
-		// TODO: Keep parsing class declarations until eot
+		//Keep parsing class declarations until eot
 		while(_currentToken.getTokenType() != TokenType.EOT)
 		{
+			//We can have any number of class declarations
 			parseClassDeclaration();
 		}
 	}
 
-	// ClassDeclaration ::= class identifier { (FieldDeclaration|MethodDeclaration)* }
+	// ClassDeclaration ::= class identifier { (Visiblity Access (FieldDeclaration|MethodDeclaration))* }
 	private void parseClassDeclaration() throws SyntaxError
 	{
+		//Need class token
 		accept(TokenType.CLASS);
+		//Need id token
 		accept(TokenType.ID);
+		//Need LBrace
 		accept(TokenType.LBRACE);
+		//Wait until we get an RBrace which signifies the end of our class
 		while(_currentToken.getTokenType() != TokenType.RBRACE)
 		{
+			//Needed to differantiate between field and method declaration
 			boolean acceptedVoid = false;
+			//Needs To start with a visibility
 			parseVisibility();
+			//Followed by access
 			parseAccess();
+			//If the void token is found, then we know we are in a MethodDeclaration
 			if(_currentToken.getTokenType() == TokenType.VOID)
 			{
 				accept(TokenType.VOID);
 				acceptedVoid = true;
 			}else{
+			//If we haven't found a void token, then bothe method and field dec start with types
+			//So we need to parse type
 				parseType();
 			}
+			//If we find a semicolon after looking ahead and we haven't accepted the void token,
+			//We must be in a Field Dec
 			if(lookAhead(1).getTokenType() == TokenType.SEMICOLON && !acceptedVoid)
 			{
 				parseFieldDec();
+			//Otherwise we expect a method dec
 			}else
 			{
 				parseMethodDec();
 			}
 		}
+		//Finish the class with a Right Brace
 		accept(TokenType.RBRACE);
 	}
 	
-	// FieldDeclaration ::= Visiblity Access Type id;
+	// FieldDeclaration ::= Type id;
 	private void parseFieldDec()
 	{
+		//Type has already been parsed above
+		//Need to accept an ID toke
 		accept(TokenType.ID);
+		//Need to accept a SemiColon
 		accept(TokenType.SEMICOLON);
 	}
 
-	//MethodDeclaration ::= Visibility Access (Type|void) id ( ParameterList? ) {Statement*}
+	//MethodDeclaration ::= (Type|void) id ( ParameterList? ) {Statement*}
 	private void parseMethodDec()
 	{
+		//Type or void has already been parsed
+		//Needs to be followed by an ID
 		accept(TokenType.ID);
+		//Needs to be followed by an LParen
 		accept(TokenType.LPAREN);
+		//We can have one parameter list
+		//If we have an RParen we have no parameter list, since parameter list can't start with rparen
 		if(_currentToken.getTokenType() == TokenType.RPAREN)
 		{
 			accept(TokenType.RPAREN);
+		//We have parameter list and need to parse it
 		}else{
 			parseParameterList();
 			accept(TokenType.RPAREN);
 		}
+		//We expect a Lbrace for the paramter statements
 		accept(TokenType.LBRACE);
+		//Wait until we find the Rbrace and then parse as many statements as needed
 		while(_currentToken.getTokenType() != TokenType.RBRACE)
 		{
 			parseStatement();
 		}
+		//Finish the method dec
 		accept(TokenType.RBRACE);
 	}
 
 	//Visibility ::= (public|private)?
 	private void parseVisibility()
 	{
+		//Can be public or private, but need not appear
 		if(_currentToken.getTokenType() == TokenType.PUBLIC)
 		{
 			accept(TokenType.PUBLIC);
@@ -103,6 +131,7 @@ public class Parser {
 	//Access ::= static?
 	private void parseAccess()
 	{
+		//Could be static
 		if(_currentToken.getTokenType() == TokenType.STATIC)
 		{
 			accept(TokenType.STATIC);
@@ -112,23 +141,30 @@ public class Parser {
 	//Type ::= int | boolean | id | (int | id) []
 	private void parseType()
 	{
+		//Check if the type starts with an int identifier
 		if(_currentToken.getTokenType() == TokenType.INT)
 		{
 			accept(TokenType.INT);
+			//Could be an array
 			if(_currentToken.getTokenType() == TokenType.LBRACKET)
 			{
 				accept(TokenType.LBRACKET);
+				//If it is an array we expect a RBracket
 				accept(TokenType.RBRACKET);
 			}
+		//Check for boolean
 		}else if(_currentToken.getTokenType() == TokenType.BOOLEAN)
 		{
 			accept(TokenType.BOOLEAN);
+		//Check for ID 
 		}else if(_currentToken.getTokenType() == TokenType.ID)
 		{
 			accept(TokenType.ID);
+			//Could be an array
 			if(_currentToken.getTokenType() == TokenType.LBRACKET)
 			{
 				accept(TokenType.LBRACKET);
+				//Expect RBracket following LBracket
 				accept(TokenType.RBRACKET);
 			}
 		}
@@ -137,8 +173,11 @@ public class Parser {
 	//ParameterList ::= Type id (, Type id)*
 	private void parseParameterList()
 	{
+		//Starts with type
 		parseType();
+		//Followed by ID
 		accept(TokenType.ID);
+		//And then any number of , Type id
 		while(_currentToken.getTokenType() == TokenType.COMMA)
 		{
 			accept(TokenType.COMMA);
@@ -146,10 +185,13 @@ public class Parser {
 			accept(TokenType.ID);
 		}
 	}
+
 	//ArgumentList ::= Expression (, Expression)*
 	private void parseArgumentList()
 	{
+		//Starts with expresion
 		parseExpression();
+		//Followed by any number of , Expressions
 		while(_currentToken.getTokenType() == TokenType.COMMA)
 		{
 			accept(TokenType.COMMA);
@@ -158,8 +200,10 @@ public class Parser {
 	}
 
 	//Reference ::= id|this|Reference.id
+	//Equivalent to (id|this)(.id)*
 	private void parseReference()
 	{
+		//Accept this or id
 		if(_currentToken.getTokenType() == TokenType.THIS)
 		{
 			accept(TokenType.THIS);
@@ -167,6 +211,7 @@ public class Parser {
 		{
 			accept(TokenType.ID);
 		}
+		//Followed by any number of . and id
 		while(_currentToken.getTokenType() == TokenType.PERIOD)
 		{
 			accept(TokenType.PERIOD);
@@ -176,13 +221,21 @@ public class Parser {
 
 	private void parseStatement()
 	{
+		//while ( Expresion ) Statement
+		//If we see a while token, we need to parse the above rule
 		if(_currentToken.getTokenType() == TokenType.WHILE)
 		{
+			//Accept while
 			accept(TokenType.WHILE);
+			//Followed by LParen
 			accept(TokenType.LPAREN);
+			//Followed by Expression
 			parseExpression();
+			//Followed by RParen
 			accept(TokenType.RPAREN);
+			//Ending in Statement
 			parseStatement();
+		//if ( expresion ) Statement (else statement)? 
 		}else if(_currentToken.getTokenType() == TokenType.IF)
 		{
 			accept(TokenType.IF);
@@ -194,6 +247,7 @@ public class Parser {
 			{
 				parseStatement();
 			}
+		// return Expression?;
 		}else if(_currentToken.getTokenType() == TokenType.RETURN)
 		{
 			accept(TokenType.RETURN);
@@ -204,6 +258,7 @@ public class Parser {
 				parseExpression();
 				accept(TokenType.SEMICOLON);
 			}
+		//{Statement*}
 		}else if(_currentToken.getTokenType() == TokenType.LBRACE)
 		{
 			accept(TokenType.LBRACE);
@@ -212,22 +267,31 @@ public class Parser {
 				parseStatement();
 			}
 			accept(TokenType.RBRACE);
+		// Need to decide between Reference and Type
 		}else{
+			//Only type can start with Boolean or Int
 			if(_currentToken.getTokenType() == TokenType.BOOLEAN || _currentToken.getTokenType() == TokenType.INT)
 			{
 				parseTypeStatement();
+			//Both type and reference can start with ID
 			}else if(_currentToken.getTokenType() == TokenType.ID)
 			{
+				//Get the next token
 				TokenType ahead = _scanner.lookAhead(1).getTokenType();
+				//If the next token is ID, only the statement option starting with type can have ID ID
 				if(ahead == TokenType.ID)
 				{
 					parseTypeStatement();
+				//If there is a LBracket, we could have Reference [ Expression ] or ID[]
 				}else if(ahead == TokenType.LBRACKET)
 				{
+					//Check the next token 
 					TokenType ahead2 = _scanner.lookAhead(2).getTokenType();
+					//If we see ID[], then it must be a Type statement
 					if(ahead2 == TokenType.RBRACKET)
 					{
 						parseTypeStatement();
+					//Otherwise we must have a reference statement to parse
 					}else{
 						parseReferenceStatement();
 					}

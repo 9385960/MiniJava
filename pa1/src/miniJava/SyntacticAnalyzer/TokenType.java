@@ -1,6 +1,5 @@
 package miniJava.SyntacticAnalyzer;
 
-// TODO: Enumate the types of tokens we have.
 //   Consider taking a look at the terminals in the Grammar.
 //   What types of tokens do we want to be able to differentiate between?
 //   E.g., I know "class" and "while" will result in different syntax, so
