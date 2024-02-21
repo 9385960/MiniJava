@@ -389,7 +389,7 @@ public class Parser {
 				accept(TokenType.RBRACKET);
 			}else if(_currentToken.getTokenType() == TokenType.LPAREN)
 			{
-				accept(TokenType.RPAREN);
+				accept(TokenType.LPAREN);
 				if(_currentToken.getTokenType() != TokenType.RPAREN)
 				{
 					parseArgumentList();
