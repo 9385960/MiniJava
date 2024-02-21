@@ -261,7 +261,7 @@ public class Scanner {
 	}
 	
 	private Token makeToken( TokenType toktype ) {
-		Token toReturn = new Token(toktype,_currentText.toString());
+		Token toReturn = new Token(toktype,_currentText.toString(), new SourcePosition());
 		_currentText.delete(0, _currentText.length());
 		return toReturn;
 	}

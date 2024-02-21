@@ -3,11 +3,13 @@ package miniJava.SyntacticAnalyzer;
 public class Token {
 	private TokenType _type;
 	private String _text;
+	private SourcePosition _position;
 	
-	public Token(TokenType type, String text) {
+	public Token(TokenType type, String text, SourcePosition position) {
 		// TODO: Store the token's type and text
 		_type = type;
 		_text = text;
+		_position = position;
 	}
 	
 	public TokenType getTokenType() {
@@ -16,5 +18,9 @@ public class Token {
 	
 	public String getTokenText() {
 		return _text;
+	}
+
+	public SourcePosition getTokenPosition() {
+		return _position;
 	}
 }
