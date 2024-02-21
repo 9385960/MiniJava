@@ -24,7 +24,7 @@ public class Compiler {
 				p.parse();
 
 			}catch(Exception e){
-				error.reportError("Compiler Error");
+				error.reportError("File Not Found");
 			}
 			// TODO: Instantiate the scanner with the input stream and error object
 			

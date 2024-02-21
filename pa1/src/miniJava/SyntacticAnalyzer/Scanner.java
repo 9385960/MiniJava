@@ -68,7 +68,7 @@ public class Scanner {
 				skipIt();
 				boolean foundStar = false;
 				boolean foundSlash = false;
-				while(!foundStar || !foundSlash)
+				while((!foundStar || !foundSlash) && !_endOfDocument)
 				{
 					if(_currentChar == '/' && foundStar)
 					{
