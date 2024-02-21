@@ -8,15 +8,9 @@
             "type": "java",
             "name": "Current File",
             "request": "launch",
-            "mainClass": "${file}",
-            "args": "C:\\Users\\njauc.DESKTOP-3KFKN4I\\Documents\\School\\Comp_520\\MiniJava\\test.minijava"
-        },
-        {
-            "type": "java",
-            "name": "Compiler",
-            "request": "launch",
             "mainClass": "miniJava.Compiler",
-            "projectName": "pa1"
+            "projectName": "pa1",
+            "args": "C:\\Users\\njauc.DESKTOP-3KFKN4I\\Documents\\School\\Comp_520\\MiniJava\\test.minijava"
         }
     ]
 }
