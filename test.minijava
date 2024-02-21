@@ -1,21 +1,10 @@
-// PA1 parse parse pass
-class MainClass {
-   public static void main (String [] args) {
-      SecondSubClass newobj = new SecondSubClass ();
-   }
+// PA1 parse call pass
+class Test {
+
+    void p(int a) {
+	C c = new C();
+	y = p();
+	x = c.p(2,3) + x[2];
+    }
 }
-class SuperClass
-{
-   private void fillup (boolean open, int [] jar, int marble, int upto) {
-
-      int index = 0;
-      if (open == true) {
-         while ( index < upto ) {
-            ownjar [index] = jar [index];
-	    jar [index] = marble;
-         }  // while
-      }  // if
-   }  // fillup
-
-}  // class SuperClass
 

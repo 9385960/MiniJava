@@ -14,6 +14,7 @@ public class Scanner {
 	private LinkedList<Token> _tokenization = new LinkedList<Token>();
 	private boolean _endOfDocument = false;
 	private boolean _endOfToken = false;
+	private boolean _insideComment = false;
 	private Map<String,TokenType> reservedWords = new HashMap<>();
 	
 	public Scanner( InputStream in, ErrorReporter errors ) {
@@ -34,6 +35,10 @@ public class Scanner {
 		if(_endOfDocument)
 		{
 			_endOfToken = true;
+			if(_insideComment)
+			{
+				_errors.reportError("No End of Comment");
+			}
 			return makeToken(TokenType.EOT);
 		}
 		while(Character.isWhitespace(_currentChar)||Character.isISOControl(_currentChar))
@@ -59,6 +64,7 @@ public class Scanner {
 				return scan();
 			}else if(_currentChar == '*')
 			{
+				_insideComment = true;
 				skipIt();
 				boolean foundStar = false;
 				boolean foundSlash = false;
@@ -67,6 +73,7 @@ public class Scanner {
 					if(_currentChar == '/' && foundStar)
 					{
 						foundSlash = true;
+						_insideComment = false;
 					}
 					if(_currentChar == '*')
 					{
