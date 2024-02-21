@@ -1,6 +1,7 @@
 package miniJava.SyntacticAnalyzer;
 
 import miniJava.ErrorReporter;
+import miniJava.AbstractSyntaxTrees.*;
 //Class to parse the tokens
 public class Parser {
 	private Scanner _scanner;
@@ -35,8 +36,12 @@ public class Parser {
 	}
 
 	// ClassDeclaration ::= class identifier { (Visiblity Access (FieldDeclaration|MethodDeclaration))* }
-	private void parseClassDeclaration() throws SyntaxError
+	private ClassDecl parseClassDeclaration() throws SyntaxError
 	{
+		String className = _scanner.getCurrentToken().getTokenText();
+		FieldDeclList fields = new FieldDeclList();
+		MethodDeclList methods = new MethodDeclList();
+		SourcePosition position = _scanner.getCurrentToken().getTokenPosition();
 		//Need class token
 		accept(TokenType.CLASS);
 		//Need id token
@@ -75,6 +80,8 @@ public class Parser {
 		}
 		//Finish the class with a Right Brace
 		accept(TokenType.RBRACE);
+
+		return new ClassDecl(className, fields, methods, position);
 	}
 	
 	// FieldDeclaration ::= Type id;
