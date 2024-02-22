@@ -404,7 +404,7 @@ public class Parser {
 			accept(TokenType.SEMICOLON);
 			return new IxAssignStmt(r, i, e, position);
 		}else{
-			ExprList list = null;
+			ExprList list = new ExprList();
 			accept(TokenType.LPAREN);
 			if(_currentToken.getTokenType() != TokenType.RPAREN)
 			{
@@ -489,7 +489,7 @@ public class Parser {
 				potentialExpression = new IxExpr(r, e, position);
 			}else if(_currentToken.getTokenType() == TokenType.LPAREN)
 			{
-				ExprList list = null;
+				ExprList list = new ExprList();
 				accept(TokenType.LPAREN);
 				if(_currentToken.getTokenType() != TokenType.RPAREN)
 				{
