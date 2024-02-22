@@ -236,12 +236,12 @@ public class Parser {
 	{
 		ExprList list = new ExprList();
 		//Starts with expresion
-		list.add(parseE());
+		list.add(parseA());
 		//Followed by any number of , Expressions
 		while(_currentToken.getTokenType() == TokenType.COMMA)
 		{
 			accept(TokenType.COMMA);
-			list.add(parseE());
+			list.add(parseA());
 		}
 		return list;
 	}
@@ -287,7 +287,7 @@ public class Parser {
 			//Followed by LParen
 			accept(TokenType.LPAREN);
 			//Followed by Expression
-			Expression e = parseE();
+			Expression e = parseA();
 			//Followed by RParen
 			accept(TokenType.RPAREN);
 			//Ending in Statement
@@ -299,7 +299,7 @@ public class Parser {
 			SourcePosition position = _currentToken.getTokenPosition();
 			accept(TokenType.IF);
 			accept(TokenType.LPAREN);
-			Expression b = parseE();
+			Expression b = parseA();
 			accept(TokenType.RPAREN);
 			Statement t = parseStatement();
 			if(_currentToken.getTokenType() == TokenType.ELSE)
@@ -319,7 +319,7 @@ public class Parser {
 				accept(TokenType.SEMICOLON);
 				return new ReturnStmt(null, position);
 			}else{
-				Expression e = parseE();
+				Expression e = parseA();
 				accept(TokenType.SEMICOLON);
 				return new ReturnStmt(e, position);
 			}
@@ -380,7 +380,7 @@ public class Parser {
 		VarDecl varDecl = new VarDecl(t, name, position);
 		accept(TokenType.ID);
 		accept(TokenType.EQUALS);
-		Expression e = parseE();
+		Expression e = parseA();
 		accept(TokenType.SEMICOLON);
 		return new VarDeclStmt(varDecl, e, position);
 	}
@@ -392,16 +392,16 @@ public class Parser {
 		if(_currentToken.getTokenType() == TokenType.EQUALS)
 		{
 			accept(TokenType.EQUALS);
-			Expression e = parseE();
+			Expression e = parseA();
 			accept(TokenType.SEMICOLON);
 			return new AssignStmt(r, e, position);
 		}else if(_currentToken.getTokenType() == TokenType.LBRACKET)
 		{
 			accept(TokenType.LBRACKET);
-			Expression i = parseE();
+			Expression i = parseA();
 			accept(TokenType.RBRACKET);
 			accept(TokenType.EQUALS);
-			Expression e = parseE();
+			Expression e = parseA();
 			accept(TokenType.SEMICOLON);
 			return new IxAssignStmt(r, i, e, position);
 		}else{
@@ -415,6 +415,62 @@ public class Parser {
 			accept(TokenType.SEMICOLON);
 			return new CallStmt(r, list, position);
 		}
+	}
+
+	private Expression parseA()
+	{
+		Expression t1 = parseB();
+		while(_currentToken.getTokenText().equals("||"))
+		{
+			SourcePosition position = new SourcePosition();
+			Operator op = new Operator(_currentToken);
+			accept(TokenType.OPERATOR);
+			Expression t2 = parseB();
+			t1 = new BinaryExpr(op, t1, t2, position);
+		}
+		return t1;
+	}
+
+	private Expression parseB()
+	{
+		Expression t1 = parseC();
+		while(_currentToken.getTokenText().equals("&&"))
+		{
+			SourcePosition position = new SourcePosition();
+			Operator op = new Operator(_currentToken);
+			accept(TokenType.OPERATOR);
+			Expression t2 = parseC();
+			t1 = new BinaryExpr(op, t1, t2, position);
+		}
+		return t1;
+	}
+
+	private Expression parseC()
+	{
+		Expression t1 = parseD();
+		while(_currentToken.getTokenText().equals("==")||_currentToken.getTokenText().equals("!="))
+		{
+			SourcePosition position = new SourcePosition();
+			Operator op = new Operator(_currentToken);
+			accept(TokenType.OPERATOR);
+			Expression t2 = parseD();
+			t1 = new BinaryExpr(op, t1, t2, position);
+		}
+		return t1;
+	}
+
+	private Expression parseD()
+	{
+		Expression t1 = parseE();
+		while(_currentToken.getTokenText().equals("<=")||_currentToken.getTokenText().equals(">=")||_currentToken.getTokenText().equals(">")||_currentToken.getTokenText().equals("<"))
+		{
+			SourcePosition position = new SourcePosition();
+			Operator op = new Operator(_currentToken);
+			accept(TokenType.OPERATOR);
+			Expression t2 = parseE();
+			t1 = new BinaryExpr(op, t1, t2, position);
+		}
+		return t1;
 	}
 
 	private Expression parseE()
@@ -470,7 +526,7 @@ public class Parser {
 					potentialExpression = new NewObjectExpr(et, position);
 				}else{
 					accept(TokenType.LBRACKET);
-					Expression e = parseE();
+					Expression e = parseA();
 					accept(TokenType.RBRACKET);
 					potentialExpression = new NewArrayExpr(et, e, position);
 				}
@@ -479,7 +535,7 @@ public class Parser {
 				TypeDenoter t = new BaseType(TypeKind.INT, idPosition);
 				accept(TokenType.INT);
 				accept(TokenType.LBRACKET);
-				Expression e = parseE();
+				Expression e = parseA();
 				accept(TokenType.RBRACKET);
 				potentialExpression = new NewArrayExpr(t, e, position);
 			}
@@ -510,7 +566,7 @@ public class Parser {
 		}else if(_currentToken.getTokenType() == TokenType.LPAREN)
 		{
 			accept(TokenType.LPAREN);
-			potentialExpression = parseE();
+			potentialExpression = parseA();
 			accept(TokenType.RPAREN);
 		}else {
 			SourcePosition position = _currentToken.getTokenPosition();
@@ -518,7 +574,7 @@ public class Parser {
 			if(_currentToken.getTokenType() == TokenType.LBRACKET)
 			{
 				accept(TokenType.LBRACKET);
-				Expression e = parseE();
+				Expression e = parseA();
 				accept(TokenType.RBRACKET);
 				potentialExpression = new IxExpr(r, e, position);
 			}else if(_currentToken.getTokenType() == TokenType.LPAREN)
