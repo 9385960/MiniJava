@@ -1,12 +1,10 @@
-// PA1 parse refs pass
-class Test {
+// PA2 return stmt options
+class Foo {
 
-    void p() {
-        a = true;
-        a [b] = c;
-        p ();
-        a.b = d;
-        c.p(e);
+    void check() {
+	if (true == false)
+	    return;
+	else
+	    return new Foo();
     }
 }
-
