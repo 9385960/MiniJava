@@ -223,7 +223,6 @@ public class Parser {
 		{
 			accept(TokenType.COMMA);
 			position = _currentToken.getTokenPosition();
-			declList = new ParameterDeclList();
 			type = parseType();
 			name = _currentToken.getTokenText();
 			declList.add(new ParameterDecl(type, name, position));
@@ -509,7 +508,7 @@ public class Parser {
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression e = parseExpression();
-			potentialExpression = new BinaryExpr(op, potentialExpression, e, position);
+			potentialExpression = new BinaryExpr(op, e ,potentialExpression, position);
 		}
 
 		return potentialExpression;
