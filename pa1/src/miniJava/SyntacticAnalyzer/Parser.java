@@ -304,6 +304,7 @@ public class Parser {
 			Statement t = parseStatement();
 			if(_currentToken.getTokenType() == TokenType.ELSE)
 			{
+				accept(TokenType.ELSE);
 				Statement e = parseStatement();
 				return new IfStmt(b, t, e, position);
 			}
