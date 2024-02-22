@@ -472,7 +472,7 @@ public class Parser {
 			SourcePosition unopPosition = _currentToken.getTokenPosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
-			Expression e = parseExpression();
+			Expression e = parseExpressionWithoutBinop();;
 			potentialExpression = new UnaryExpr(op, e, unopPosition);
 		}else if(_currentToken.getTokenType() == TokenType.LPAREN)
 		{
@@ -569,7 +569,7 @@ public class Parser {
 			SourcePosition unopPosition = _currentToken.getTokenPosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
-			Expression e = parseExpression();
+			Expression e = parseExpressionWithoutBinop();
 			potentialExpression = new UnaryExpr(op, e, unopPosition);
 		}else if(_currentToken.getTokenType() == TokenType.LPAREN)
 		{
