@@ -508,7 +508,7 @@ public class Parser {
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression e = parseExpression();
-			potentialExpression = new BinaryExpr(op, e ,potentialExpression, position);
+			potentialExpression = new BinaryExpr(op, potentialExpression ,e, position);
 		}
 
 		return potentialExpression;
