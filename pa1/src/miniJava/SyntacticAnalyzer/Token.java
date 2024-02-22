@@ -6,7 +6,7 @@ public class Token {
 	private SourcePosition _position;
 	
 	public Token(TokenType type, String text, SourcePosition position) {
-		// TODO: Store the token's type and text
+		// Store the token's type and text
 		_type = type;
 		_text = text;
 		_position = position;

@@ -251,19 +251,19 @@ public class Scanner {
 			int c = _in.read();
 			_currentChar = (char)c;
 			
-			// TODO: What happens if c == -1?
+			//What happens if c == -1?
 			if(c == -1)
 			{
 				_endOfDocument = true;
 			}
-			// TODO: What happens if c is not a regular ASCII character?
-			if((int) c < 0 || (int)c > 127)
+			//What happens if c is not a regular ASCII character?
+			if((int)c > 127)
 			{
-				//TODO: make error
-				//throw new IOException();
+				//make error
+				throw new IOException();
 			}
 		} catch( IOException e ) {
-			// TODO: Report an error here
+			//Report an error here
 			_errors.reportError("Character could not be read");
 		}
 	}
