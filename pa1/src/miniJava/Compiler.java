@@ -44,9 +44,9 @@ public class Compiler {
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			//System.out.println("Success");
-			ASTDisplay disp = new ASTDisplay();
-			disp.showTree(tree);
+			System.out.println("Success");
+			//ASTDisplay disp = new ASTDisplay();
+			//disp.showTree(tree);
 		}
 	}
 }
