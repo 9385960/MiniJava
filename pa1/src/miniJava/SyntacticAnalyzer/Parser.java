@@ -110,7 +110,7 @@ public class Parser {
 	{
 		String name = _currentToken.getTokenText();
 		MemberDecl member = new FieldDecl(isPrivate,isStatic,mt,name,position);
-		ParameterDeclList parameterList = null;
+		ParameterDeclList parameterList = new ParameterDeclList();
 		StatementList statementList = new StatementList();
 		//Type or void has already been parsed
 		//Needs to be followed by an ID
