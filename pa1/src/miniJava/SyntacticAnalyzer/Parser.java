@@ -43,13 +43,13 @@ public class Parser {
 	// ClassDeclaration ::= class identifier { (Visiblity Access (FieldDeclaration|MethodDeclaration))* }
 	private ClassDecl parseClassDeclaration() throws SyntaxError
 	{
-		String className = _scanner.getCurrentToken().getTokenText();
 		FieldDeclList fields = new FieldDeclList();
 		MethodDeclList methods = new MethodDeclList();
 		SourcePosition position = _scanner.getCurrentToken().getTokenPosition();
 		//Need class token
 		accept(TokenType.CLASS);
 		//Need id token
+		String className = _scanner.getCurrentToken().getTokenText();
 		accept(TokenType.ID);
 		//Need LBrace
 		accept(TokenType.LBRACE);
