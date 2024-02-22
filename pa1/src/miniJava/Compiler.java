@@ -2,7 +2,8 @@ package miniJava;
 
 import java.io.FileInputStream;
 
-
+import miniJava.AbstractSyntaxTrees.AST;
+import miniJava.AbstractSyntaxTrees.ASTDisplay;
 import miniJava.SyntacticAnalyzer.Parser;
 import miniJava.SyntacticAnalyzer.Scanner;
 
@@ -12,6 +13,7 @@ public class Compiler {
 		// TODO: Instantiate the ErrorReporter object
 		ErrorReporter error = new ErrorReporter();
 		// TODO: Check to make sure a file path is given in args
+		AST tree = null;
 		if(args.length == 0)
 		{
 			error.reportError("File path not given");
@@ -21,7 +23,7 @@ public class Compiler {
 				FileInputStream stream = new FileInputStream(args[0]);
 				Scanner scan = new Scanner(stream,error);
 				Parser p = new Parser(scan, error);
-				p.parse();
+				tree = p.parse();
 
 			}catch(Exception e){
 				error.reportError("File Not Found");
@@ -42,7 +44,8 @@ public class Compiler {
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			System.out.println("Success");
+			ASTDisplay disp = new ASTDisplay();
+			disp.showTree(tree);
 		}
 	}
 }

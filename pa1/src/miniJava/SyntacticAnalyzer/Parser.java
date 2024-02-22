@@ -19,11 +19,12 @@ public class Parser {
 		private static final long serialVersionUID = -6461942006097999362L;
 	}
 	//Attempts to parse
-	public void parse() {
+	public AST parse() {
 		try {
 			// The first thing we need to parse is the Program symbol
-			parseProgram();
-		} catch( SyntaxError e ) { }
+			return parseProgram();
+		} catch( SyntaxError e ) { return null; }
+		
 	}
 	
 	// Program ::= (ClassDeclaration)* eot
