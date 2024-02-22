@@ -502,14 +502,102 @@ public class Parser {
 				potentialExpression = new RefExpr(r, position);
 			}
 		}
-
 		while(isBinop(_currentToken))
 		{
 			SourcePosition position = _currentToken.getTokenPosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
-			Expression e = parseExpression();
+			Expression e = parseExpressionWithoutBinop();
 			potentialExpression = new BinaryExpr(op, potentialExpression ,e, position);
+		}
+
+		return potentialExpression;
+	}
+
+	private Expression parseExpressionWithoutBinop()
+	{
+		Expression potentialExpression;
+		if(_currentToken.getTokenType() == TokenType.NEW)
+		{
+			SourcePosition position = _currentToken.getTokenPosition();
+			accept(TokenType.NEW);
+			if(_currentToken.getTokenType() == TokenType.ID)
+			{
+				SourcePosition idPosition = _currentToken.getTokenPosition();
+				Identifier id = new Identifier(_currentToken);
+				ClassType et = new ClassType(id, idPosition);
+				accept(TokenType.ID);
+				if(_currentToken.getTokenType() == TokenType.LPAREN)
+				{
+					accept(TokenType.LPAREN);
+					accept(TokenType.RPAREN);
+					potentialExpression = new NewObjectExpr(et, position);
+				}else{
+					accept(TokenType.LBRACKET);
+					Expression e = parseExpression();
+					accept(TokenType.RBRACKET);
+					potentialExpression = new NewArrayExpr(et, e, position);
+				}
+			}else {
+				SourcePosition idPosition = _currentToken.getTokenPosition();
+				TypeDenoter t = new BaseType(TypeKind.INT, idPosition);
+				accept(TokenType.INT);
+				accept(TokenType.LBRACKET);
+				Expression e = parseExpression();
+				accept(TokenType.RBRACKET);
+				potentialExpression = new NewArrayExpr(t, e, position);
+			}
+		}else if(_currentToken.getTokenType() == TokenType.NUM){
+			SourcePosition numPosition = _currentToken.getTokenPosition();
+			Terminal t = new IntLiteral(_currentToken);
+			potentialExpression = new LiteralExpr(t, numPosition);
+			accept(TokenType.NUM);
+		}else if(_currentToken.getTokenType() == TokenType.TRUE)
+		{
+			SourcePosition boolPosition = _currentToken.getTokenPosition();
+			Terminal t = new BooleanLiteral(_currentToken);
+			potentialExpression = new LiteralExpr(t, boolPosition);
+			accept(TokenType.TRUE);
+		}else if(_currentToken.getTokenType() == TokenType.FALSE)
+		{
+			SourcePosition boolPosition = _currentToken.getTokenPosition();
+			Terminal t = new BooleanLiteral(_currentToken);
+			potentialExpression = new LiteralExpr(t, boolPosition);
+			accept(TokenType.FALSE);
+		}else if(_currentToken.getTokenType() == TokenType.OPERATOR && isUnop(_currentToken))
+		{
+			SourcePosition unopPosition = _currentToken.getTokenPosition();
+			Operator op = new Operator(_currentToken);
+			accept(TokenType.OPERATOR);
+			Expression e = parseExpression();
+			potentialExpression = new UnaryExpr(op, e, unopPosition);
+		}else if(_currentToken.getTokenType() == TokenType.LPAREN)
+		{
+			accept(TokenType.LPAREN);
+			potentialExpression = parseExpression();
+			accept(TokenType.RPAREN);
+		}else {
+			SourcePosition position = _currentToken.getTokenPosition();
+			Reference r = parseReference();
+			if(_currentToken.getTokenType() == TokenType.LBRACKET)
+			{
+				accept(TokenType.LBRACKET);
+				Expression e = parseExpression();
+				accept(TokenType.RBRACKET);
+				potentialExpression = new IxExpr(r, e, position);
+			}else if(_currentToken.getTokenType() == TokenType.LPAREN)
+			{
+				ExprList list = new ExprList();
+				accept(TokenType.LPAREN);
+				if(_currentToken.getTokenType() != TokenType.RPAREN)
+				{
+					list = parseArgumentList();
+				}
+				accept(TokenType.RPAREN);
+				potentialExpression = new CallExpr(r, list, position);
+			}else {
+				potentialExpression = new RefExpr(r, position);
+			}
 		}
 
 		return potentialExpression;

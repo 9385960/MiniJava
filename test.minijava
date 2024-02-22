@@ -1,10 +1,6 @@
-// PA2 return stmt options
-class Foo {
-
-    void check() {
-	if (true == false)
-	    return;
-	else
-	    return new Foo();
-    }
+//  PA2 pass expr precedence
+class A { 
+    int f() { 
+        x = 1 * 2 + 3 * 4; 
+    } 
 }
