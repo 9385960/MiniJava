@@ -61,11 +61,15 @@ public class ScopedIdentification {
         return true;
     }
 
-    public Declaration findDeclaration(String s)
+    public Declaration findDeclaration(String s, Context c)
     {
-
-
-
+        for(HashMap<String,Declaration> map : siStack)
+        {
+            if(map.containsKey(s))
+            {
+                return map.get(s);
+            }
+        }
         return null;
     }
 }

@@ -24,17 +24,36 @@ public class Identification implements Visitor<Context,Object>{
 
     @Override
     public Object visitClassDecl(ClassDecl cd, Context arg) {
+        arg.SetClassName(cd.name);
+
+        Context nextArg = arg.CopyContext();
+        nextArg.IncrementDepth();
+
         for(int i = 0; i < arg.GetDepth(); i++)
         {
             System.out.print(" ");
         }
         System.out.println("class");
-        return null;
+        for (FieldDecl f: cd.fieldDeclList)
+        {
+            f.visit(this, nextArg);
+        }
+        for (MethodDecl m: cd.methodDeclList)
+        {
+            m.visit(this, nextArg);
+        }
+        return arg;
     }
 
     @Override
     public Object visitFieldDecl(FieldDecl fd, Context arg) {
         // TODO Auto-generated method stub
+        for(int i = 0; i < arg.GetDepth(); i++)
+        {
+            System.out.print(" ");
+        }
+        System.out.println("field decl");
+        fd.visit(this,arg.CopyContext());
         return null;
     }
 

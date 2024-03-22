@@ -42,4 +42,13 @@ public class Context {
     {
         return type;
     }
+
+    public Context CopyContext()
+    {
+        Context toReturn = new Context();
+        toReturn.SetClassName(this.className);
+        toReturn.SetDepth(this.depth);
+        toReturn.SetType(this.type);
+        return toReturn;
+    }
 }
