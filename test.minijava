@@ -1,7 +1,31 @@
 // PA1 lex unop pass
-class id {
+class A {
+    int num;
+    B test;
+
+    void init()
+    {
+        test = new B();
+    }
+
     void p(){
         boolean x =  10 >- b;
+    }
+    void b() {
+        B no = new B();
+        int x = 5;
+    }
+    int c() {
+        return test.GetSum(num);
+    }
+}
+
+class B {
+    int y;
+
+    int GetSum(int z)
+    {
+        return y+z;
     }
 }
 
