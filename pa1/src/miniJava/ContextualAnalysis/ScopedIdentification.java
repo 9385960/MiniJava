@@ -123,6 +123,15 @@ public class ScopedIdentification {
         }
         HashMap<String,Declaration> map = siStack.peek();
         map.put(s, d);
+        if(d.type instanceof ClassType)
+        {
+            String s1 = ((ClassType)d.type).className.spelling;
+            if(!level0.containsKey(s1))
+            {
+                error.reportError("Class "+s1+" does not exist");
+            }
+        }
+        //System.out.println("ID "+s+" declaired with type "+d.type.toString());
         return true;
     }
 

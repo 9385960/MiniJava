@@ -1,9 +1,12 @@
-/*** line 7: duplicate declaration of member "foo" 
+/***  line 10: undeclared class "weird"
  * COMP 520
  * Identification
  */
-class fail302 {
+class fail307 { 	
 
-    public int foo;
-    private void foo() {}
+
+    public void weird() { }
+
+    public void foo(weird x) { }
 }
+
