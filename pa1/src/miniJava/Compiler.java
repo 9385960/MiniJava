@@ -45,17 +45,16 @@ public class Compiler {
 		}
 
 		
-
+		Identification id = new Identification();
+		id.identify(tree,error);
 		if(error.hasErrors())
 		{
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			//System.out.println("Success");
+			System.out.println("Success");
 			ASTDisplay disp = new ASTDisplay();
 			disp.showTree(tree);
-			Identification id = new Identification();
-			id.identify(tree,error);
 			
 		}
 	}

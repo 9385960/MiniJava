@@ -2,37 +2,20 @@
 class A {
     int num;
     B test;
-
-    void init()
-    {
-        test = null;
-    }
-
-    void p(){
-        boolean x =  10 >- b;
-        {
-            int y = 1;
-        }
-    }
-    void b() {
-        B no = new B();
-        int x = 5;
-    }
-    int c() {
-        return test.GetSum(num);
-    }
+    static int x;
 }
 
 class B {
     int y;
     A sadness;
-    int GetSum(int z)
-    {
-        return y+z;
-    }
+
 
     int d()
     {
-        return sadness.test.sadness.test.sadness.test.sadness.c();
+        sadness = y + 2;
+    }
+    void c()
+    {
+        
     }
 }

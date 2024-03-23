@@ -73,6 +73,7 @@ public class Context {
         toReturn.SetDepth(this.depth);
         toReturn.SetType(this.type);
         toReturn.SetContextClass(this.contextClass);
+        toReturn.SetStaticContext(this.inStaticContext);
         return toReturn;
     }
 }

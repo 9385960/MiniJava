@@ -56,6 +56,7 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         fd.type.visit(this,nextArg);
+        arg.SetStaticContext(nextArg.GetStaticContext());
         return arg;
     }
 
@@ -64,9 +65,11 @@ public class Identification implements Visitor<Context,Object>{
         
         ScopedIdentification.openScope();
         printIndent(arg);
-        //System.out.println("Method decl : "+md.toString());
+        System.out.println("Method decl : "+md.toString()+" : is static "+md.isStatic);
+        arg.SetStaticContext(md.isStatic);
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
+        
         for (ParameterDecl pd: md.parameterDeclList) {
             pd.visit(this, nextArg.CopyContext());
         }
@@ -118,6 +121,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
         //arg.SetType(type.className.spelling);
         type.className.visit(this, nextArg);
+        arg.SetStaticContext(nextArg.GetStaticContext());
         return arg;
     }
 
@@ -159,21 +163,27 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitAssignStmt(AssignStmt stmt, Context arg) {
         printIndent(arg);
-        //System.out.println("Assign stmt : "+stmt.toString());
-        Context nextArg = arg.CopyContext();
-        nextArg.IncrementDepth();
-        stmt.ref.visit(this, nextArg.CopyContext());
-        stmt.val.visit(this, nextArg.CopyContext());
+        System.out.println("Assign stmt : "+stmt.toString());
+        Context firstArg = arg.CopyContext();
+        firstArg.IncrementDepth();
+        Context secondArg = arg.CopyContext();
+        firstArg.IncrementDepth();
+        
+        stmt.ref.visit(this, firstArg);
+        System.out.println("First type : "+firstArg.GetType());
+        stmt.val.visit(this, secondArg);
+        System.out.println("Second  type : "+secondArg.GetType());
         return arg;
     }
 
     @Override
     public Object visitIxAssignStmt(IxAssignStmt stmt, Context arg) {
         printIndent(arg);
-        //System.out.println("Indexed Assign stmt : "+stmt.toString());
+        //System.out.println("Indexed Assign stmt : ");
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         stmt.ref.visit(this, nextArg.CopyContext());
+        
         stmt.ix.visit(this, nextArg.CopyContext());
         stmt.exp.visit(this, nextArg.CopyContext());
         return arg;
@@ -243,12 +253,16 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitBinaryExpr(BinaryExpr expr, Context arg) {
         printIndent(arg);
-        //System.out.println("Binary Expr : "+expr.toString());
+        System.out.println("Binary Expr : ");
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
-        expr.operator.visit(this, nextArg.CopyContext());
-        expr.left.visit(this, nextArg.CopyContext());
+        expr.operator.visit(this, nextArg);
+
+        expr.left.visit(this, nextArg);
+        System.out.println("First argument type : "+nextArg.GetType());
         expr.right.visit(this, nextArg.CopyContext());
+        System.out.println("Secon argument type : "+nextArg.GetType());
+        arg.SetType(nextArg.GetType());
         return null;
     }
 
@@ -330,7 +344,11 @@ public class Identification implements Visitor<Context,Object>{
     public Object visitThisRef(ThisRef ref, Context arg) {
         printIndent(arg);
         //System.out.println("this ref : "+ref.toString());
-        
+        arg.SetType(arg.GetClassName());
+        if(arg.GetStaticContext())
+        {
+            error.reportError("This keyword cannot be used in a static context.");
+        }
         return arg;
     }
 
@@ -342,6 +360,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
         ref.id.visit(this, nextArg);
         arg.SetType(nextArg.GetType());
+        arg.SetStaticContext(nextArg.GetStaticContext());
         return arg;
     }
 
@@ -351,11 +370,12 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("q ref : "+ref.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
-        System.out.println("Resolving q ref in class " + arg.GetClassName()+" in the context of " + arg.GetContextClass());
+        //System.out.println("Resolving q ref in class " + arg.GetClassName()+" in the context of " + arg.GetContextClass());
         ref.ref.visit(this, nextArg);
         nextArg.SetContextClass(nextArg.GetType());
+        arg.SetStaticContext(nextArg.GetStaticContext());
         ref.id.visit(this, nextArg);
-        
+        arg.SetStaticContext(nextArg.GetStaticContext());
         //ref.id.decl.visit(this, nextArg);
         arg.SetType(nextArg.GetType());
     	
@@ -365,7 +385,7 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitIdentifier(Identifier id, Context arg) {
         printIndent(arg);
-        System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling);
+        System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling+" and is static " + arg.GetStaticContext());
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
@@ -374,6 +394,10 @@ public class Identification implements Visitor<Context,Object>{
                 System.out.println("Declaration found");
                 id.decl = decl;
                 SetTypeDecl(arg,decl);
+                if(ScopedIdentification.IsClass(id.spelling))
+                {
+                    arg.SetStaticContext(true);
+                }
             }else {
                 System.out.println("Declaration not found");
                 error.reportError("Identifier for "+id.spelling+" does not exist.");

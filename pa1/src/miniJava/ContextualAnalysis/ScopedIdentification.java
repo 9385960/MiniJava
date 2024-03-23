@@ -8,7 +8,7 @@ import miniJava.SyntacticAnalyzer.TokenType;
 
 public class ScopedIdentification {
     private static ErrorReporter error;
-    private static HashMap<String,ClassDecl> level0 = new HashMap<>();
+    private static HashMap<String,Declaration> level0 = new HashMap<>();
     private static HashMap<String,HashMap<String,MemberDecl>> level1 = new HashMap<>();
     private static Stack<HashMap<String,Declaration>> siStack = new Stack<>();
     private static String currentClass;
@@ -16,28 +16,51 @@ public class ScopedIdentification {
     public static void init(ErrorReporter e)
     {
         error = e;
-        /*AddClass("System");
+        AddClassList("System");
         Identifier id = new Identifier(new Token(TokenType.ID, "_PrintStream", null));
+        FieldDeclList fields = new FieldDeclList();
+		MethodDeclList methods = new MethodDeclList();
         TypeDenoter type = new ClassType(id, null);
         MemberDecl toadd = new FieldDecl(false,true,type,"out",null);
         ParameterDeclList parameterList = new ParameterDeclList();
 		StatementList statementList = new StatementList();
-        toadd = new MethodDecl(toadd, parameterList, statementList, null);
-        AddClassMember("System", "out", toadd);
-        AddClass("_PrintStream");
+        MethodDecl methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
+        AddClassMember("System", "out", methodtoadd);
+        methods.add(methodtoadd);
+        ClassDecl classDecl = new ClassDecl("System", fields, methods, null);
+
+        AddClass("System", classDecl);
+
+
+        AddClassList("_PrintStream");
+
+        fields = new FieldDeclList();
+		methods = new MethodDeclList();
+
         type = new BaseType(TypeKind.VOID, null);
         toadd = new FieldDecl(false,false,type,"println",null);
         parameterList = new ParameterDeclList();
         TypeDenoter parameterType = new BaseType(TypeKind.INT, null);
         parameterList.add(new ParameterDecl(parameterType, "n", null));
 		statementList = new StatementList();
-        toadd = new MethodDecl(toadd, parameterList, statementList, null);
-        AddClassMember("_PrintStream", "println", toadd);*/
+        methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
+        AddClassMember("_PrintStream", "println", methodtoadd);
+        methods.add(methodtoadd);
+        classDecl = new ClassDecl("_PrintStream", fields, methods, null);
+        AddClass("_PrintStream", classDecl);
+
+        //TypeDenoter string = new BaseType(TypeKind.UNSUPPORTED, null);
+        fields = new FieldDeclList();
+		methods = new MethodDeclList();
+        AddClassList("String");
+        classDecl = new ClassDecl("String", fields, methods, null);
+        AddClass("String", classDecl);
+        //Declaration dec = new VarDecl(string, "String", null);
 
     }
 
 
-    public static void AddClass(String n,ClassDecl decl)
+    public static void AddClass(String n,Declaration decl)
     {
         System.out.println("added "+n+" to the classes declaired");
         level0.put(n,decl);
@@ -112,6 +135,22 @@ public class ScopedIdentification {
             if(members.containsKey(s))
             {
                 MemberDecl dec = members.get(s);
+                if(dec.isStatic)
+                {
+                    if(c.GetStaticContext())
+                    {
+                        return dec;
+                    }else{
+                        error.reportError("Cannot acces static member "+s+" in a non static context");
+                    }      
+                }else{
+                    if(!c.GetStaticContext())
+                    {
+                        return dec;
+                    }else{
+                        error.reportError("Cannot acces non static member "+s+" in a static context");
+                    }
+                }
                 if(dec.isPrivate)
                 {
                     if(c.GetClassName().equals(c.GetContextClass()))
@@ -126,5 +165,9 @@ public class ScopedIdentification {
             }
         }
         return null;
+    }
+    public static boolean IsClass(String s)
+    {
+        return level0.containsKey(s);
     }
 }
