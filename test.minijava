@@ -1,11 +1,9 @@
-/*** line 8: condition in "if" statement does not have type "boolean"
+/*** line 7: binary operator "!=" requires arguments to have the same type.
  * COMP 520
  * Type checking
  */
-class Fail324 {
+class Fail325 {
     public static void main(String [] args) {
-        int x = 3;
-	if (x) 
-	    x = x + 1;
+	boolean b = 15 + 7 != true;
     }
 }

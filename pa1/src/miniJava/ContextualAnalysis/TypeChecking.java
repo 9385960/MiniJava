@@ -46,7 +46,7 @@ public class TypeChecking {
             }
         }else if(opS.equals("==")||opS.equals("!="))
         {
-            if(!(t1.equals(t2)))
+            if((t1.equals(t2)))
             {
                 return TypeKind.BOOLEAN.toString();
             }
