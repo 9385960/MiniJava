@@ -333,8 +333,9 @@ public class ASTDisplay implements Visitor<String,Object> {
         
     public Object visitQRef(QualRef qr, String arg) {
     	show(arg, qr);
-    	qr.id.visit(this, indent(arg));
+    	
     	qr.ref.visit(this, indent(arg));
+        qr.id.visit(this, indent(arg));
 	    return null;
     }
       
@@ -362,6 +363,11 @@ public class ASTDisplay implements Visitor<String,Object> {
     
     public Object visitBooleanLiteral(BooleanLiteral bool, String arg){
         show(arg, quote(bool.spelling) + " " + bool.toString());
+        return null;
+    }
+
+    public Object visitNullLiteral(NullLiteral nl, String arg) {
+        show(arg, quote(nl.spelling) + " " + nl.toString());
         return null;
     }
 }

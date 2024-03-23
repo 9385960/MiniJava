@@ -3,6 +3,7 @@ package miniJava.SyntacticAnalyzer;
 import miniJava.ErrorReporter;
 import miniJava.AbstractSyntaxTrees.*;
 import miniJava.AbstractSyntaxTrees.Package;
+import miniJava.ContextualAnalysis.ScopedIdentification;
 //Class to parse the tokens
 public class Parser {
 	private Scanner _scanner;
@@ -50,6 +51,8 @@ public class Parser {
 		accept(TokenType.CLASS);
 		//Need id token
 		String className = _scanner.getCurrentToken().getTokenText();
+		ScopedIdentification.AddClassList(className);
+		ScopedIdentification.SetCurrentClass(className);
 		accept(TokenType.ID);
 		//Need LBrace
 		accept(TokenType.LBRACE);
@@ -89,8 +92,10 @@ public class Parser {
 		}
 		//Finish the class with a Right Brace
 		accept(TokenType.RBRACE);
+		ClassDecl classDecl = new ClassDecl(className, fields, methods, position);
+		ScopedIdentification.AddClass(className, classDecl);
 
-		return new ClassDecl(className, fields, methods, position);
+		return classDecl;
 	}
 	
 	// FieldDeclaration ::= Type id;
@@ -102,7 +107,9 @@ public class Parser {
 		accept(TokenType.ID);
 		//Need to accept a SemiColon
 		accept(TokenType.SEMICOLON);
-		return new FieldDecl(isPrivate, isStatic, type, name, position);
+		FieldDecl fieldDecl = new FieldDecl(isPrivate, isStatic, type, name, position);
+		ScopedIdentification.AddCurrentClassMember(name, fieldDecl);
+		return fieldDecl;
 	}
 
 	//MethodDeclaration ::= (Type|void) id ( ParameterList? ) {Statement*}
@@ -136,7 +143,9 @@ public class Parser {
 		}
 		//Finish the method dec
 		accept(TokenType.RBRACE);
-		return new MethodDecl(member, parameterList, statementList, position);
+		MethodDecl methodDecl = new MethodDecl(member, parameterList, statementList, position);
+		ScopedIdentification.AddCurrentClassMember(name, methodDecl);
+		return methodDecl;
 	}
 
 	//Visibility ::= (public|private)?
@@ -539,6 +548,12 @@ public class Parser {
 				accept(TokenType.RBRACKET);
 				potentialExpression = new NewArrayExpr(t, e, position);
 			}
+		}else if(_currentToken.getTokenType() == TokenType.NULL)
+		{
+			SourcePosition nullPosition = _currentToken.getTokenPosition();
+			Terminal t = new NullLiteral(_currentToken);
+			accept(TokenType.NULL);
+			potentialExpression = new LiteralExpr(t, nullPosition);
 		}else if(_currentToken.getTokenType() == TokenType.NUM){
 			SourcePosition numPosition = _currentToken.getTokenPosition();
 			Terminal t = new IntLiteral(_currentToken);

@@ -5,11 +5,14 @@ class A {
 
     void init()
     {
-        test = new B();
+        test = null;
     }
 
     void p(){
         boolean x =  10 >- b;
+        {
+            int y = 1;
+        }
     }
     void b() {
         B no = new B();
@@ -22,10 +25,14 @@ class A {
 
 class B {
     int y;
-
+    A sadness;
     int GetSum(int z)
     {
         return y+z;
     }
-}
 
+    int d()
+    {
+        return sadness.test.sadness.test.sadness.test.sadness.c();
+    }
+}

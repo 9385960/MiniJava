@@ -7,11 +7,34 @@ public class Context {
 
     private String className;
 
+    private String contextClass;
+
+    private boolean inStaticContext = false;
+
     public void IncrementDepth()
     {
         depth += 1;
     }
 
+    public void SetContextClass(String c)
+    {
+        contextClass = c;
+    }
+
+    public void SetStaticContext(boolean s)
+    {
+        inStaticContext = s;
+    }
+
+    public boolean GetStaticContext()
+    {
+        return inStaticContext;
+    }
+
+    public String GetContextClass()
+    {
+        return contextClass;
+    }
 
     public void SetClassName(String c)
     {
@@ -49,6 +72,7 @@ public class Context {
         toReturn.SetClassName(this.className);
         toReturn.SetDepth(this.depth);
         toReturn.SetType(this.type);
+        toReturn.SetContextClass(this.contextClass);
         return toReturn;
     }
 }

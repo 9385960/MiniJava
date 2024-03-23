@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 
 import miniJava.AbstractSyntaxTrees.AST;
 import miniJava.AbstractSyntaxTrees.ASTDisplay;
+import miniJava.ContextualAnalysis.Identification;
+import miniJava.ContextualAnalysis.ScopedIdentification;
 import miniJava.SyntacticAnalyzer.Parser;
 import miniJava.SyntacticAnalyzer.Scanner;
 
@@ -14,6 +16,9 @@ public class Compiler {
 		ErrorReporter error = new ErrorReporter();
 		//Check to make sure a file path is given in args
 		AST tree = null;
+
+		ScopedIdentification.init(error);
+
 		if(args.length == 0)
 		{
 			error.reportError("File path not given");
@@ -24,7 +29,6 @@ public class Compiler {
 				Scanner scan = new Scanner(stream,error);
 				Parser p = new Parser(scan, error);
 				tree = p.parse();
-
 			}catch(Exception e){
 				error.reportError("File Not Found");
 			}
@@ -39,6 +43,9 @@ public class Compiler {
 			
 			//If there are no errors, println("Success")
 		}
+
+		
+
 		if(error.hasErrors())
 		{
 			System.out.println("Error");
@@ -47,6 +54,9 @@ public class Compiler {
 			//System.out.println("Success");
 			ASTDisplay disp = new ASTDisplay();
 			disp.showTree(tree);
+			Identification id = new Identification();
+			id.identify(tree,error);
+			
 		}
 	}
 }
