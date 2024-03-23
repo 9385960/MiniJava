@@ -200,6 +200,10 @@ public class Identification implements Visitor<Context,Object>{
     public Object visitCallStmt(CallStmt stmt, Context arg) {
         printIndent(arg);
         //System.out.println("Call stmt : "+stmt.toString());
+        if(stmt.methodRef instanceof ThisRef)
+        {
+            error.reportError("Keyword this is not callable");
+        }
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
 
