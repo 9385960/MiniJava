@@ -267,10 +267,11 @@ public class Identification implements Visitor<Context,Object>{
 
         expr.left.visit(this, nextArg);
         String t1 = nextArg.GetType();
-        expr.right.visit(this, nextArg.CopyContext());
+        expr.right.visit(this, nextArg);
         String t2 = nextArg.GetType();
         //System.out.println(t1 + expr.operator.spelling+t2);
         arg.SetType(TypeChecking.GetTypeBinop(t1, t2, expr.operator));
+        //System.out.println("Result Type : "+arg.GetType());
         return null;
     }
 
@@ -320,7 +321,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
 
         expr.lit.visit(this, nextArg);
-
+        arg.SetType(nextArg.GetType());
         return arg;
     }
 
@@ -332,7 +333,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
 
         expr.classtype.visit(this, nextArg);
-
+        arg.SetType(nextArg.GetType());
         return arg;
     }
 
@@ -432,7 +433,7 @@ public class Identification implements Visitor<Context,Object>{
         printIndent(arg);
         //System.out.println("Int literal : "+num.toString());
         
-        
+        arg.SetType(TypeKind.INT.toString());
         return arg;
     }
 
@@ -440,7 +441,7 @@ public class Identification implements Visitor<Context,Object>{
     public Object visitBooleanLiteral(BooleanLiteral bool, Context arg) {
         printIndent(arg);
         //System.out.println("Block stmt : "+bool.toString());
-        
+        arg.SetType(TypeKind.BOOLEAN.toString());
         return arg;
     }
 
@@ -449,7 +450,7 @@ public class Identification implements Visitor<Context,Object>{
     {
         printIndent(arg);
         //System.out.println("Block stmt : "+nl.toString());
-        
+        arg.SetType("null");
         return arg;
     }
 
