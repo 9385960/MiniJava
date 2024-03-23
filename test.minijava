@@ -1,10 +1,12 @@
-/*** line 8: binary operator "+" expecting "int" type, received "boolean" type
+/*** line 11: duplicate declaration of class "Extra"
  * COMP 520
- * Type Checking
+ * Identification
  */
-class fail311 {
+class fail320 {
+    int x;
+}
 
-    public int f() {
-	return 1 + (2 < 3);
-    }
+class fail320 {
+    // duplicate class
+    int y; 
 }

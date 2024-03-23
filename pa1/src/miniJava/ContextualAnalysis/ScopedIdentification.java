@@ -63,6 +63,10 @@ public class ScopedIdentification {
     public static void AddClass(String n,Declaration decl)
     {
         //System.out.println("added "+n+" to the classes declaired");
+        if(level0.containsKey(n))
+        {
+            error.reportError("Class " + n + " has already been defined.");
+        }
         level0.put(n,decl);
     }
 
