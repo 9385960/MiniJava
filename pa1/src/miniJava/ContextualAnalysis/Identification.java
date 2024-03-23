@@ -65,7 +65,7 @@ public class Identification implements Visitor<Context,Object>{
         
         ScopedIdentification.openScope();
         printIndent(arg);
-        System.out.println("Method decl : "+md.toString()+" : is static "+md.isStatic);
+        //System.out.println("Method decl : "+md.toString()+" : is static "+md.isStatic);
         arg.SetStaticContext(md.isStatic);
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
@@ -99,7 +99,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
         decl.type.visit(this, nextArg);
         ScopedIdentification.addDeclaration(decl.name,decl);
-        System.out.println("added new declaration : " + decl.name);
+        //System.out.println("added new declaration : " + decl.name);
         return arg;
     }
 
@@ -163,16 +163,22 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitAssignStmt(AssignStmt stmt, Context arg) {
         printIndent(arg);
-        System.out.println("Assign stmt : "+stmt.toString());
+        //System.out.println("Assign stmt : "+stmt.toString());
         Context firstArg = arg.CopyContext();
         firstArg.IncrementDepth();
         Context secondArg = arg.CopyContext();
         firstArg.IncrementDepth();
-        
         stmt.ref.visit(this, firstArg);
-        System.out.println("First type : "+firstArg.GetType());
+        String t1 = firstArg.GetType();
+        //System.out.println("First type : "+t1);
         stmt.val.visit(this, secondArg);
-        System.out.println("Second  type : "+secondArg.GetType());
+        String t2 = secondArg.GetType();
+        //System.out.println("Second  type : "+t2);
+        arg.SetType(t1);
+        if(t1 != t2)
+        {
+            error.reportError("Cannot assign type " + t2 + " to type "+t1);
+        }
         return arg;
     }
 
@@ -246,23 +252,25 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         expr.operator.visit(this, nextArg.CopyContext());
-        expr.expr.visit(this, nextArg.CopyContext());
+        expr.expr.visit(this, nextArg);
+        arg.SetType(TypeChecking.GetTypeUnop(nextArg.GetType(), expr.operator));
         return arg;
     }
 
     @Override
     public Object visitBinaryExpr(BinaryExpr expr, Context arg) {
         printIndent(arg);
-        System.out.println("Binary Expr : ");
+        //System.out.println("Binary Expr : ");
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         expr.operator.visit(this, nextArg);
 
         expr.left.visit(this, nextArg);
-        System.out.println("First argument type : "+nextArg.GetType());
+        String t1 = nextArg.GetType();
         expr.right.visit(this, nextArg.CopyContext());
-        System.out.println("Secon argument type : "+nextArg.GetType());
-        arg.SetType(nextArg.GetType());
+        String t2 = nextArg.GetType();
+        //System.out.println(t1 + expr.operator.spelling+t2);
+        arg.SetType(TypeChecking.GetTypeBinop(t1, t2, expr.operator));
         return null;
     }
 
@@ -273,6 +281,7 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         expr.ref.visit(this, nextArg);
+        arg.SetType(nextArg.GetType());
         return arg;
     }
 
@@ -385,13 +394,13 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitIdentifier(Identifier id, Context arg) {
         printIndent(arg);
-        System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling+" and is static " + arg.GetStaticContext());
+        //System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling+" and is static " + arg.GetStaticContext());
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
             if(decl != null)
             {
-                System.out.println("Declaration found");
+                //System.out.println("Declaration found");
                 id.decl = decl;
                 SetTypeDecl(arg,decl);
                 if(ScopedIdentification.IsClass(id.spelling))
@@ -399,7 +408,7 @@ public class Identification implements Visitor<Context,Object>{
                     arg.SetStaticContext(true);
                 }
             }else {
-                System.out.println("Declaration not found");
+                //System.out.println("Declaration not found");
                 error.reportError("Identifier for "+id.spelling+" does not exist.");
             }
         }else{
@@ -463,7 +472,7 @@ public class Identification implements Visitor<Context,Object>{
         }else{
             arg.SetType(decl.name);
         }
-        System.out.println("Type decl "+arg.GetType());
+        //System.out.println("Type decl "+arg.GetType());
     }
     
 }

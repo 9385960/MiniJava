@@ -56,13 +56,13 @@ public class ScopedIdentification {
         classDecl = new ClassDecl("String", fields, methods, null);
         AddClass("String", classDecl);
         //Declaration dec = new VarDecl(string, "String", null);
-
+        TypeChecking.init(e);
     }
 
 
     public static void AddClass(String n,Declaration decl)
     {
-        System.out.println("added "+n+" to the classes declaired");
+        //System.out.println("added "+n+" to the classes declaired");
         level0.put(n,decl);
     }
 
@@ -84,7 +84,7 @@ public class ScopedIdentification {
 
     public static void AddCurrentClassMember(String m, MemberDecl dec)
     {
-        System.out.println("added "+m+" to the "+currentClass+" class");
+        //System.out.println("added "+m+" to the "+currentClass+" class");
         HashMap<String,MemberDecl> classMembers = level1.get(currentClass);
         classMembers.put(m,dec);
     }

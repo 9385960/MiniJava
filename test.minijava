@@ -12,7 +12,7 @@ class B {
 
     int d()
     {
-        sadness = y + 2;
+        sadness.num = -sadness + 2;
     }
     void c()
     {

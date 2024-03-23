@@ -19,18 +19,63 @@ public class TypeChecking {
     }
 
 
-    public static TypeKind GetType(TypeDenoter t1, TypeDenoter t2, Operator op)
+    public static String GetTypeBinop(String t1, String t2, Operator op)
     {
+        if(t1.equals(TypeKind.ERROR.toString())||t2.equals(TypeKind.ERROR.toString()))
+        {
+            return TypeKind.ERROR.toString();
+        }
         String opS = op.spelling;
         if(opS.equals("&&")||opS.equals("&&"))
         {
-            if(!(t1.typeKind == TypeKind.BOOLEAN)||!(t1.typeKind == TypeKind.BOOLEAN))
+            if(t1.equals(TypeKind.BOOLEAN.toString())&&t2.equals(TypeKind.BOOLEAN.toString()))
             {
-                return TypeKind.BOOLEAN;
+                return TypeKind.BOOLEAN.toString();
+            }
+        }else if(opS.equals(">")||opS.equals(">=")||opS.equals("<")||opS.equals("<="))
+        {
+            if(t1.equals(TypeKind.INT.toString())&&t2.equals(TypeKind.INT.toString()))
+            {
+                return TypeKind.BOOLEAN.toString();
+            }
+        }else if(opS.equals("+")||opS.equals("-")||opS.equals("*")||opS.equals("/"))
+        {
+            if(t1.equals(TypeKind.INT.toString())&&t2.equals(TypeKind.INT.toString()))
+            {
+                return TypeKind.INT.toString();
+            }
+        }else if(opS.equals("==")||opS.equals("!="))
+        {
+            if(!(t1.equals(t2)))
+            {
+                return TypeKind.BOOLEAN.toString();
             }
         }
-        
-        return TypeKind.ERROR;
+        error.reportError("Unsuported operation "+op.spelling+" between "+t1+" and "+t2);
+        return TypeKind.ERROR.toString();
     }
 
+    public static String GetTypeUnop(String t1, Operator op)
+    {
+        if(t1.equals(TypeKind.ERROR.toString()))
+        {
+            return TypeKind.ERROR.toString();
+        }
+        String opS = op.spelling;
+        if(opS.equals("-")||opS.equals("&&"))
+        {
+            if(t1.equals(TypeKind.INT.toString()))
+            {
+                return TypeKind.INT.toString();
+            }
+        }else if(opS.equals("!"))
+        {
+            if(t1.equals(TypeKind.BOOLEAN.toString()))
+            {
+                return TypeKind.BOOLEAN.toString();
+            }
+        }
+        error.reportError("Unsuported operation "+op.spelling+" on "+t1);
+        return TypeKind.ERROR.toString();
+    }
 }
