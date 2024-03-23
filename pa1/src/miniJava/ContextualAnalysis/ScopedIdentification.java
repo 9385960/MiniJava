@@ -79,6 +79,11 @@ public class ScopedIdentification {
     public static void AddClassMember(String c, String m, MemberDecl dec)
     {
         HashMap<String,MemberDecl> classMembers = level1.get(c);
+        if(classMembers.containsKey(m))
+        {
+            error.reportError("Identification Error: " + m + " already exists");
+            return ;
+        }
         classMembers.put(m, dec);
     }
 
@@ -86,6 +91,11 @@ public class ScopedIdentification {
     {
         //System.out.println("added "+m+" to the "+currentClass+" class");
         HashMap<String,MemberDecl> classMembers = level1.get(currentClass);
+        if(classMembers.containsKey(m))
+        {
+            error.reportError("Identification Error: " + m + " already exists");
+            return ;
+        }
         classMembers.put(m,dec);
     }
 

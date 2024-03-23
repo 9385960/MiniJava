@@ -1,21 +1,9 @@
-// PA1 lex unop pass
-class A {
-    int num;
-    B test;
-    static int x;
-}
+/*** line 7: duplicate declaration of member "foo" 
+ * COMP 520
+ * Identification
+ */
+class fail302 {
 
-class B {
-    int y;
-    A sadness;
-
-
-    int d()
-    {
-        sadness.num = -sadness + 2;
-    }
-    void c()
-    {
-        
-    }
+    public int foo;
+    private void foo() {}
 }
