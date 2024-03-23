@@ -122,6 +122,7 @@ public class Identification implements Visitor<Context,Object>{
         //arg.SetType(type.className.spelling);
         type.className.visit(this, nextArg);
         arg.SetStaticContext(nextArg.GetStaticContext());
+        arg.SetType(nextArg.GetType());
         return arg;
     }
 
@@ -273,9 +274,9 @@ public class Identification implements Visitor<Context,Object>{
         String t1 = nextArg.GetType();
         expr.right.visit(this, nextArg);
         String t2 = nextArg.GetType();
-        //System.out.println(t1 + expr.operator.spelling+t2);
+        System.out.println(t1 + expr.operator.spelling+t2);
         arg.SetType(TypeChecking.GetTypeBinop(t1, t2, expr.operator));
-        //System.out.println("Result Type : "+arg.GetType());
+        System.out.println("Result Type : "+arg.GetType());
         return null;
     }
 

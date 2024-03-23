@@ -1,12 +1,18 @@
-/*** line 11: index expression does not have type "int"
+/*** line 8: binary operator "==" requires arguments to have the same type.
  * COMP 520
- * Identification
+ * Type checking
  */
-class Fail327 {
-
-    public int [] a;
-
-    void f() {
-	int x = a[a];
+class fail331 { 	
+       
+    public void foo () {
+	boolean c = (new A() == new B());
     }
+}
+
+class A {
+    int y;
+}
+
+class B {
+    int x;
 }
