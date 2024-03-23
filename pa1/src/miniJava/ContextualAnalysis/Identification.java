@@ -227,7 +227,11 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("If stmt : "+stmt.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
-        stmt.cond.visit(this, nextArg.CopyContext());
+        stmt.cond.visit(this, nextArg);
+        if(!nextArg.GetType().equals(TypeKind.BOOLEAN.toString()))
+        {
+            error.reportError("If statement expression needs to evaluate to a boolean");
+        }
         stmt.thenStmt.visit(this, nextArg.CopyContext());
         if (stmt.elseStmt != null)
             stmt.elseStmt.visit(this, nextArg.CopyContext());
