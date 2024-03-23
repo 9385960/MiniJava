@@ -297,7 +297,11 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         expr.ref.visit(this, nextArg.CopyContext());
-        expr.ixExpr.visit(this, nextArg.CopyContext());
+        expr.ixExpr.visit(this, nextArg);
+        if(nextArg.GetType()!=TypeKind.INT.toString())
+        {
+            error.reportError("Expression inside indices must evauluate to an int not "+nextArg.GetType());
+        }
         return arg;
     }
 
