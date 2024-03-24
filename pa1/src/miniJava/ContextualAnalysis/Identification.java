@@ -135,6 +135,7 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         type.eltType.visit(this, nextArg);
+        arg.SetType(nextArg.GetType());
         return arg;
     }
 

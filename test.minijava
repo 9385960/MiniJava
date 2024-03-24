@@ -1,13 +1,11 @@
 /**
  * COMP 520
- * Identification
+ * Array creation
  */
-class Pass304 {         
-    public static void main(String[] args) {} 
+class Pass310 {
+   public static void main (String [] args) {
 
-    public void foo(Pass304 x) {
-        int Pass304 = 3; 
-        Pass304 y = x;   /* not hidden */
-
-    }
+      int aa_length = 4;
+      int [] aa = new int [aa_length];
+   }
 }
