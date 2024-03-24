@@ -323,7 +323,8 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("Index expr : "+expr.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
-        expr.ref.visit(this, nextArg.CopyContext());
+        expr.ref.visit(this, nextArg);
+        arg.SetType(nextArg.GetType());
         expr.ixExpr.visit(this, nextArg);
         if(nextArg.GetType()!=TypeKind.INT.toString())
         {
@@ -505,6 +506,9 @@ public class Identification implements Visitor<Context,Object>{
         }else if(decl.type instanceof ClassType)
         {
             arg.SetType(((ClassType)decl.type).className.spelling);
+        }else if(decl.type instanceof ArrayType)
+        {
+            arg.SetType(((ArrayType)decl.type).eltType.typeKind.toString());
         }else{
             arg.SetType(decl.name);
         }

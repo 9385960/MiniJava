@@ -13,6 +13,18 @@ public class Context {
 
     private boolean isFromClassType = false;
 
+    private boolean wantArrayType = false;
+
+    public void SetWantArray(boolean w)
+    {
+        wantArrayType = w;
+    }
+
+    public boolean GetWantArray()
+    {
+        return wantArrayType;
+    }
+
 
     public void SetFromClassType(boolean s)
     {
