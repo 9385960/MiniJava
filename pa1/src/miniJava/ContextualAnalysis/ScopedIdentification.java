@@ -162,14 +162,32 @@ public class ScopedIdentification {
                 {
                     if(c.GetStaticContext())
                     {
-                        return dec;
+                        if(dec.isPrivate)
+                        {
+                            if(c.GetClassName().equals(c.GetContextClass()))
+                            {
+                                return dec;
+                            }else{
+                                error.reportError("Cannot acces private member "+s+" of "+c.GetContextClass()+" in "+c.GetClassName());
+                                return null;
+                            }
+                        }
                     }else{
                         error.reportError("Cannot acces static member "+s+" in a non static context");
                     }      
                 }else{
                     if(!c.GetStaticContext())
                     {
-                        return dec;
+                        if(dec.isPrivate)
+                        {
+                            if(c.GetClassName().equals(c.GetContextClass()))
+                            {
+                                return dec;
+                            }else{
+                                error.reportError("Cannot acces private member "+s+" of "+c.GetContextClass()+" in "+c.GetClassName());
+                                return null;
+                            }
+                        }
                     }else{
                         error.reportError("Cannot acces non static member "+s+" in a static context");
                     }
@@ -180,6 +198,7 @@ public class ScopedIdentification {
                     {
                         return dec;
                     }else{
+                        error.reportError("Cannot acces private member "+s+" of "+c.GetContextClass()+" in "+c.GetClassName());
                         return null;
                     }
                 }else{
