@@ -99,6 +99,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.IncrementDepth();
         decl.type.visit(this, nextArg);
         ScopedIdentification.addDeclaration(decl.name,decl);
+        arg.SetType(nextArg.GetType());
         //System.out.println("added new declaration : " + decl.name);
         return arg;
     }
@@ -156,8 +157,16 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("VarDeclStmt : "+stmt.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
-        stmt.varDecl.visit(this, nextArg.CopyContext());	
-        stmt.initExp.visit(this, nextArg.CopyContext());
+        stmt.varDecl.visit(this, nextArg);	
+        String t1 = nextArg.GetType();
+        //System.out.println("First type : "+t1);
+        stmt.initExp.visit(this, nextArg);
+        String t2 = nextArg.GetType();
+        //System.out.println("First type : "+t2);
+        if(!t1.equals(t2))
+        {
+            error.reportError("Cannot assign type "+t2+" to type "+t1);
+        }
         return arg;
     }
 
