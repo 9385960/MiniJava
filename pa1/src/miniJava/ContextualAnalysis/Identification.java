@@ -120,6 +120,7 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("class type : "+type.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
+        nextArg.SetFromClassType(true);
         //arg.SetType(type.className.spelling);
         type.className.visit(this, nextArg);
         arg.SetStaticContext(nextArg.GetStaticContext());

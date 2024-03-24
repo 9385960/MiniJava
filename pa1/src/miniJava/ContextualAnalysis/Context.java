@@ -11,6 +11,19 @@ public class Context {
 
     private boolean inStaticContext = false;
 
+    private boolean isFromClassType = false;
+
+
+    public void SetFromClassType(boolean s)
+    {
+        isFromClassType = s;
+    }
+
+    public boolean GetFromClassType()
+    {
+        return isFromClassType;
+    }
+
     public void IncrementDepth()
     {
         depth += 1;
@@ -74,6 +87,7 @@ public class Context {
         toReturn.SetType(this.type);
         toReturn.SetContextClass(this.contextClass);
         toReturn.SetStaticContext(this.inStaticContext);
+        toReturn.SetFromClassType(this.isFromClassType);
         return toReturn;
     }
 }

@@ -141,6 +141,10 @@ public class ScopedIdentification {
 
     public static Declaration findDeclaration(String s, Context c)
     {
+        if(c.GetFromClassType())
+        {
+            return level0.get(s);
+        }
         for(HashMap<String,Declaration> map : siStack)
         {
             if(map.containsKey(s))
