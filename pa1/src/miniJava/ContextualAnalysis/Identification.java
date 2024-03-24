@@ -450,6 +450,10 @@ public class Identification implements Visitor<Context,Object>{
                 {
                     arg.SetStaticContext(true);
                 }
+                if(ScopedIdentification.IsScopeVariable(id.spelling)&&arg.GetClassName().equals(arg.GetContextClass()))
+                {
+                    arg.SetStaticContext(false);
+                }
             }else {
                 //System.out.println("Declaration not found");
                 error.reportError("Identifier for "+id.spelling+" does not exist.");

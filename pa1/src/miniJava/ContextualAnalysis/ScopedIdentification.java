@@ -216,4 +216,16 @@ public class ScopedIdentification {
     {
         return level0.containsKey(s);
     }
+    public static boolean IsScopeVariable(String s)
+    {
+        for(HashMap<String,Declaration> map : siStack)
+        {
+            if(map.containsKey(s))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
