@@ -242,6 +242,13 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         stmt.cond.visit(this, nextArg);
+        if(stmt.thenStmt instanceof VarDeclStmt)
+        {
+            error.reportError("Single variable declaration not permitted after if statement");
+        }else if(stmt.elseStmt instanceof VarDeclStmt)
+        {
+            error.reportError("Single variable declaration not permitted after if statement");
+        }
         if(!nextArg.GetType().equals(TypeKind.BOOLEAN.toString()))
         {
             error.reportError("If statement expression needs to evaluate to a boolean");
@@ -257,6 +264,10 @@ public class Identification implements Visitor<Context,Object>{
         printIndent(arg);
         //System.out.println("while stmt : "+stmt.toString());
         Context nextArg = arg.CopyContext();
+        if(stmt.body instanceof VarDeclStmt)
+        {
+            error.reportError("Single variable declaration not permitted after while statement");
+        }
         nextArg.IncrementDepth();
         stmt.cond.visit(this, nextArg.CopyContext());
         stmt.body.visit(this, nextArg.CopyContext());
