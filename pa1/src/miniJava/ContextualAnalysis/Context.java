@@ -100,6 +100,7 @@ public class Context {
         toReturn.SetContextClass(this.contextClass);
         toReturn.SetStaticContext(this.inStaticContext);
         toReturn.SetFromClassType(this.isFromClassType);
+        toReturn.SetWantArray(this.wantArrayType);
         return toReturn;
     }
 }

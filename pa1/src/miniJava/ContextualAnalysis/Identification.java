@@ -130,12 +130,13 @@ public class Identification implements Visitor<Context,Object>{
 
     @Override
     public Object visitArrayType(ArrayType type, Context arg) {
+
         printIndent(arg);
         //System.out.println("Array Type : "+type.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
         type.eltType.visit(this, nextArg);
-        arg.SetType(nextArg.GetType());
+        arg.SetType(nextArg.GetType()+"Array");
         return arg;
     }
 
@@ -164,7 +165,7 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("First type : "+t1);
         stmt.initExp.visit(this, nextArg);
         String t2 = nextArg.GetType();
-        //System.out.println("First type : "+t2);
+        //System.out.println("Second type : "+t2);
         if(!t1.equals(t2))
         {
             error.reportError("Cannot assign type "+t2+" to type "+t1);
@@ -187,7 +188,7 @@ public class Identification implements Visitor<Context,Object>{
         String t2 = secondArg.GetType();
         //System.out.println("Second  type : "+t2);
         arg.SetType(t1);
-        if(t1 != t2)
+        if(!t1.equals(t2))
         {
             error.reportError("Cannot assign type " + t2 + " to type "+t1);
         }
@@ -200,8 +201,9 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("Indexed Assign stmt : ");
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
+        nextArg.SetWantArray(true);
         stmt.ref.visit(this, nextArg.CopyContext());
-        
+        nextArg.SetWantArray(false);
         stmt.ix.visit(this, nextArg.CopyContext());
         stmt.exp.visit(this, nextArg.CopyContext());
         return arg;
@@ -323,7 +325,9 @@ public class Identification implements Visitor<Context,Object>{
         //System.out.println("Index expr : "+expr.toString());
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
+        nextArg.SetWantArray(true);
         expr.ref.visit(this, nextArg);
+        nextArg.SetWantArray(false);
         arg.SetType(nextArg.GetType());
         expr.ixExpr.visit(this, nextArg);
         if(nextArg.GetType()!=TypeKind.INT.toString())
@@ -380,7 +384,9 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
 
-        expr.eltType.visit(this, nextArg.CopyContext());
+        expr.eltType.visit(this, nextArg);
+        arg.SetType(nextArg.GetType()+"Array");
+
         expr.sizeExpr.visit(this, nextArg.CopyContext());
 
         return arg;
@@ -508,7 +514,22 @@ public class Identification implements Visitor<Context,Object>{
             arg.SetType(((ClassType)decl.type).className.spelling);
         }else if(decl.type instanceof ArrayType)
         {
-            arg.SetType(((ArrayType)decl.type).eltType.typeKind.toString());
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            if(arg.GetWantArray())
+            {
+                arg.SetType(cName);
+            }else{
+                String postfix = "Array";
+                arg.SetType(cName+postfix);
+            }
+            
         }else{
             arg.SetType(decl.name);
         }
