@@ -437,7 +437,7 @@ public class Identification implements Visitor<Context,Object>{
     @Override
     public Object visitIdentifier(Identifier id, Context arg) {
         printIndent(arg);
-        //System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling+" and is static " + arg.GetStaticContext());
+        System.out.println("identifier in "+arg.GetClassName()+" with context "+arg.GetContextClass()+" : "+id.spelling+" and is static " + arg.GetStaticContext());
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
@@ -449,10 +449,6 @@ public class Identification implements Visitor<Context,Object>{
                 if(ScopedIdentification.IsClass(id.spelling))
                 {
                     arg.SetStaticContext(true);
-                }
-                if(ScopedIdentification.IsScopeVariable(id.spelling))
-                {
-                    arg.SetStaticContext(false);
                 }
             }else {
                 //System.out.println("Declaration not found");
