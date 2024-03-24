@@ -427,7 +427,7 @@ public class Identification implements Visitor<Context,Object>{
         nextArg.SetContextClass(nextArg.GetType());
         arg.SetStaticContext(nextArg.GetStaticContext());
         ref.id.visit(this, nextArg);
-        arg.SetStaticContext(nextArg.GetStaticContext());
+        arg.SetStaticContext(false);
         //ref.id.decl.visit(this, nextArg);
         arg.SetType(nextArg.GetType());
     	
@@ -449,8 +449,6 @@ public class Identification implements Visitor<Context,Object>{
                 if(ScopedIdentification.IsClass(id.spelling))
                 {
                     arg.SetStaticContext(true);
-                }else{
-                    //arg.SetStaticContext(false);
                 }
             }else {
                 //System.out.println("Declaration not found");

@@ -2,13 +2,15 @@
  * COMP 520
  * Identification
  */
-class Pass321 { 	
+class Pass324 {         
     public static void main(String[] args) {
-        Pass321 p = new Pass321();
-        p.next = p;
-        p.next.next.x = 3;
-    } 
+        Pass324 p = new Pass324();
+        int x = p.p() + p.x;
+    }
     
-    public Pass321 next;
-    private int x;
+    public int x;
+    
+    public int p() {
+        return 3;
+    }
 }
