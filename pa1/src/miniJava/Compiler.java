@@ -53,8 +53,8 @@ public class Compiler {
 			error.outputErrors();
 		}else{
 			System.out.println("Success");
-			//ASTDisplay disp = new ASTDisplay();
-			//disp.showTree(tree);
+			ASTDisplay disp = new ASTDisplay();
+			disp.showTree(tree);
 			
 		}
 	}

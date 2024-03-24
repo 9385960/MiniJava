@@ -148,10 +148,6 @@ public class ScopedIdentification {
                 return map.get(s);
             }
         }
-        if(level0.containsKey(s))
-        {
-            return level0.get(s);
-        }
         if(level0.containsKey(c.GetContextClass()))
         {
             HashMap<String,MemberDecl> members = level1.get(c.GetContextClass());
@@ -205,6 +201,10 @@ public class ScopedIdentification {
                     return dec;
                 }
             }
+        }
+        if(level0.containsKey(s))
+        {
+            return level0.get(s);
         }
         return null;
     }
