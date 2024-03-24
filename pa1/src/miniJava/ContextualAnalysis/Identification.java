@@ -166,7 +166,7 @@ public class Identification implements Visitor<Context,Object>{
         stmt.initExp.visit(this, nextArg);
         String t2 = nextArg.GetType();
         //System.out.println("Second type : "+t2);
-        if(!t1.equals(t2))
+        if(!t1.equals(t2)&&!t2.equals("null"))
         {
             error.reportError("Cannot assign type "+t2+" to type "+t1);
         }
@@ -188,7 +188,7 @@ public class Identification implements Visitor<Context,Object>{
         String t2 = secondArg.GetType();
         //System.out.println("Second  type : "+t2);
         arg.SetType(t1);
-        if(!t1.equals(t2))
+        if(!t1.equals(t2)&&!t2.equals("null"))
         {
             error.reportError("Cannot assign type " + t2 + " to type "+t1);
         }
@@ -344,12 +344,12 @@ public class Identification implements Visitor<Context,Object>{
         Context nextArg = arg.CopyContext();
         nextArg.IncrementDepth();
 
-        expr.functionRef.visit(this, nextArg.CopyContext());
-
+        expr.functionRef.visit(this, nextArg);
+        arg.SetType(nextArg.GetType());
         for (Expression e: expr.argList) {
             e.visit(this, nextArg.CopyContext());
         }
-
+        
         return arg;
     }
 
