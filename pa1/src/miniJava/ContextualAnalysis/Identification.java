@@ -450,7 +450,7 @@ public class Identification implements Visitor<Context,Object>{
                 {
                     arg.SetStaticContext(true);
                 }else{
-                    arg.SetStaticContext(false);
+                    //arg.SetStaticContext(false);
                 }
             }else {
                 //System.out.println("Declaration not found");
