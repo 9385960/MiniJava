@@ -450,7 +450,7 @@ public class Identification implements Visitor<Context,Object>{
                 {
                     arg.SetStaticContext(true);
                 }
-                if(ScopedIdentification.IsScopeVariable(id.spelling)&&arg.GetClassName().equals(arg.GetContextClass()))
+                if(ScopedIdentification.IsScopeVariable(id.spelling))
                 {
                     arg.SetStaticContext(false);
                 }
