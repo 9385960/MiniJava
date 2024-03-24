@@ -110,7 +110,7 @@ public class Identification implements Visitor<Context,Object>{
         printIndent(arg);
         //System.out.println("found base Type "+type.typeKind.toString());
         //System.out.println("Base Type : " + type.toString());
-        //arg.SetType(type.typeKind.toString());
+        arg.SetType(type.typeKind.toString());
         return arg;
     }
 

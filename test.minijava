@@ -1,13 +1,14 @@
-/*** line 7: incompatible types in assignment statement 
+/*** line 10: variable "x "is already defined in method "foo"
  * COMP 520
- * Type checking
+ * Identification
  */
-class Fail326 { 
-    public static void main(String [] args) { 
-	C2 c = new C1(); 
+class fail304 { 	
+    
+    public void foo(int parm) {
+        int x = 0;
+        {
+            int x = 4;
+        }
     }
+
 }
-
-class C1 { }
-
-class C2 { }
