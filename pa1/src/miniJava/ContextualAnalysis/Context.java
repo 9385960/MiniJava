@@ -1,5 +1,8 @@
 package miniJava.ContextualAnalysis;
 
+import miniJava.AbstractSyntaxTrees.Declaration;
+import miniJava.AbstractSyntaxTrees.MethodDecl;
+
 public class Context {
     private int depth = 0;
 
@@ -14,6 +17,18 @@ public class Context {
     private boolean isFromClassType = false;
 
     private boolean wantArrayType = false;
+
+    private MethodDecl d;
+
+    public void SetMethodDec(MethodDecl decl)
+    {
+        d = decl;
+    }
+
+    public MethodDecl GetMethodDec()
+    {
+        return d;
+    }
 
     public void SetWantArray(boolean w)
     {
