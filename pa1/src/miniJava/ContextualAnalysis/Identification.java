@@ -22,6 +22,7 @@ import miniJava.AbstractSyntaxTrees.IntLiteral;
 import miniJava.AbstractSyntaxTrees.IxAssignStmt;
 import miniJava.AbstractSyntaxTrees.IxExpr;
 import miniJava.AbstractSyntaxTrees.LiteralExpr;
+import miniJava.AbstractSyntaxTrees.MemberDecl;
 import miniJava.AbstractSyntaxTrees.MethodDecl;
 import miniJava.AbstractSyntaxTrees.NewArrayExpr;
 import miniJava.AbstractSyntaxTrees.NewObjectExpr;
@@ -276,17 +277,8 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitIdRef(IdRef ref, Context arg) {
         ref.id.visit(this, arg);
-        if(ref.id.decl instanceof ClassDecl)
-        {
-            ClassDecl dec = (ClassDecl)ref.id.decl;
-            //System.out.println(dec.name);
-            arg.SetContextClass(dec.name);
-            arg.SetStaticContext(true);
-        }
-        if(ScopedIdentification.IsScopeVariable(ref.id.spelling))
-        {
-            arg.SetStaticContext(false);
-        }
+        arg.SetContextClass(GetTypeFromId(ref.id));
+        arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
     }
 
@@ -298,7 +290,7 @@ public class Identification implements Visitor<Context,Context> {
         
 
         arg.SetContextClass(GetTypeFromId(ref.id));
-        arg.SetStaticContext(false);
+        arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
     }
 
@@ -367,6 +359,23 @@ public class Identification implements Visitor<Context,Context> {
             return(cName+postfix);          
         }else{
            return(decl.name);
+        }
+    }
+
+    private Boolean GetStaticFromId(Identifier id)
+    {
+        Declaration decl = id.decl;
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl instanceof MemberDecl)
+        {
+            return ((MemberDecl)decl).isStatic;
+        }else if(decl instanceof ClassDecl){
+            return true;
+        }else{
+            return false;
         }
     }
 

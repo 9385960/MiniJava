@@ -1,14 +1,20 @@
-/*** line 10: variable "x "is already defined in method "foo"
+/**
  * COMP 520
  * Identification
  */
-class fail304 { 	
-    
-    public void foo(int parm) {
-        int x = 0;
-        {
-            int x = 4;
-        }
-    }
+class Pass325 {
 
+    private void Foo() {
+	Foiled.back.mine = 3;
+    }
+	
+    public static int mine;
+}
+
+
+class Foiled {
+
+    public static void main(String[] args) {}
+
+    static Pass325 back;
 }
