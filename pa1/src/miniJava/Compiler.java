@@ -45,8 +45,8 @@ public class Compiler {
 			//If there are no errors, println("Success")
 		}
 
-		ASTDisplay disp = new ASTDisplay();
-		disp.showTree(tree);
+		//ASTDisplay disp = new ASTDisplay();
+		//disp.showTree(tree);
 		Identification id = new Identification();
 		id.identify(tree,error);
 
