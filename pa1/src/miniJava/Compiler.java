@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import miniJava.AbstractSyntaxTrees.AST;
 import miniJava.AbstractSyntaxTrees.ASTDisplay;
 import miniJava.ContextualAnalysis.SinglePassTypeCheck;
+import miniJava.ContextualAnalysis.TypeCheck;
 import miniJava.ContextualAnalysis.Identification;
 import miniJava.ContextualAnalysis.ScopedIdentification;
 import miniJava.SyntacticAnalyzer.Parser;
@@ -44,12 +45,17 @@ public class Compiler {
 			
 			//If there are no errors, println("Success")
 		}
-
-		//ASTDisplay disp = new ASTDisplay();
-		//disp.showTree(tree);
+		if(error.hasErrors())
+		{
+			System.out.println("Error");
+			error.outputErrors();
+		}
+		ASTDisplay disp = new ASTDisplay();
+		disp.showTree(tree);
 		Identification id = new Identification();
 		id.identify(tree,error);
-
+		TypeCheck t = new TypeCheck();
+		t.typecheck(tree, error);
 		if(error.hasErrors())
 		{
 			System.out.println("Error");

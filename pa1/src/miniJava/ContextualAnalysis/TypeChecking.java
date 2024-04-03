@@ -26,7 +26,7 @@ public class TypeChecking {
             return TypeKind.ERROR.toString();
         }
         String opS = op.spelling;
-        if(opS.equals("&&")||opS.equals("&&"))
+        if(opS.equals("&&")||opS.equals("||"))
         {
             if(t1.equals(TypeKind.BOOLEAN.toString())&&t2.equals(TypeKind.BOOLEAN.toString()))
             {

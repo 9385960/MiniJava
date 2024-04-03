@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "miniJava.Compiler",
             "projectName": "pa1",
-            "args": "C:\\Users\\njauc.DESKTOP-3KFKN4I\\Documents\\School\\Comp_520\\MiniJava\\test.minijava"
+            "args": ["C:\\Users\\nikolas jauch\\Documents\\School\\College\\Comp_520\\comp520-pa-starter\\test.minijava"]
         }
     ]
 }

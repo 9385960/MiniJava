@@ -4,17 +4,11 @@
  */
 class Pass325 {
 
-    private void Foo() {
-	Foiled.back.mine = 3;
+    public int z;
+
+    public int main(){
+        int[] x = new int[5];
+        x[0] = 2+3;
+        int y = x[0] + 4+z;
     }
-	
-    public static int mine;
-}
-
-
-class Foiled {
-
-    public static void main(String[] args) {}
-
-    static Pass325 back;
 }

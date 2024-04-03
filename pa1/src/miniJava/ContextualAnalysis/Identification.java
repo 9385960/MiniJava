@@ -90,7 +90,7 @@ public class Identification implements Visitor<Context,Context> {
             pd.visit(this, arg);
         }
         for (Statement s: md.statementList) {
-            s.visit(this, arg);
+            s.visit(this, arg.CopyContext());
         }
         ScopedIdentification.closeScope();
         return arg;
@@ -130,7 +130,7 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitBlockStmt(BlockStmt stmt, Context arg) {
         ScopedIdentification.openScope();
         for (Statement s: stmt.sl) {
-        	s.visit(this, arg);
+        	s.visit(this, arg.CopyContext());
         }
         ScopedIdentification.closeScope();
         return arg;
@@ -145,14 +145,14 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitAssignStmt(AssignStmt stmt, Context arg) {
-        stmt.ref.visit(this, arg);
+        stmt.ref.visit(this, arg.CopyContext());
         stmt.val.visit(this, arg);
         return arg;
     }
 
     @Override
     public Context visitIxAssignStmt(IxAssignStmt stmt, Context arg) {
-        stmt.ref.visit(this, arg);
+        stmt.ref.visit(this, arg.CopyContext());
         stmt.ix.visit(this, arg);
         stmt.exp.visit(this, arg);
         return arg;
@@ -164,7 +164,7 @@ public class Identification implements Visitor<Context,Context> {
         {
             error.reportError("Keyword this is not callable");
         }
-        stmt.methodRef.visit(this,arg);
+        stmt.methodRef.visit(this,arg.CopyContext());
 
         for (Expression e: stmt.argList) {
             e.visit(this, arg);
@@ -226,20 +226,20 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitRefExpr(RefExpr expr, Context arg) {
-        expr.ref.visit(this, arg);
+        expr.ref.visit(this, arg.CopyContext());
         return arg;
     }
 
     @Override
     public Context visitIxExpr(IxExpr expr, Context arg) {
-        expr.ref.visit(this, arg);
+        expr.ref.visit(this, arg.CopyContext());
         expr.ixExpr.visit(this, arg);
         return arg;
     }
 
     @Override
     public Context visitCallExpr(CallExpr expr, Context arg) {
-        expr.functionRef.visit(this, arg);
+        expr.functionRef.visit(this, arg.CopyContext());
         for (Expression e: expr.argList) {
             e.visit(this, arg);
         }
@@ -367,7 +367,7 @@ public class Identification implements Visitor<Context,Context> {
         Declaration decl = id.decl;
         if(decl == null)
         {
-            return null;
+            return false;
         }
         if(decl instanceof MemberDecl)
         {
