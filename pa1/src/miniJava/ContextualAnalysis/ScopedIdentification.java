@@ -190,7 +190,7 @@ public class ScopedIdentification {
 
         return false;
     }
-    public static Declaration GetMemberDecl(String className, String idName)
+    public static MemberDecl GetMemberDecl(String className, String idName)
     {
         if(level1.containsKey(className))
         {

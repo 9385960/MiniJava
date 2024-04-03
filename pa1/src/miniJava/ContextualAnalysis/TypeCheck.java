@@ -15,6 +15,7 @@ import miniJava.AbstractSyntaxTrees.CallStmt;
 import miniJava.AbstractSyntaxTrees.ClassDecl;
 import miniJava.AbstractSyntaxTrees.ClassType;
 import miniJava.AbstractSyntaxTrees.Declaration;
+import miniJava.AbstractSyntaxTrees.Expression;
 import miniJava.AbstractSyntaxTrees.FieldDecl;
 import miniJava.AbstractSyntaxTrees.IdRef;
 import miniJava.AbstractSyntaxTrees.Identifier;
@@ -23,6 +24,7 @@ import miniJava.AbstractSyntaxTrees.IntLiteral;
 import miniJava.AbstractSyntaxTrees.IxAssignStmt;
 import miniJava.AbstractSyntaxTrees.IxExpr;
 import miniJava.AbstractSyntaxTrees.LiteralExpr;
+import miniJava.AbstractSyntaxTrees.MemberDecl;
 import miniJava.AbstractSyntaxTrees.MethodDecl;
 import miniJava.AbstractSyntaxTrees.NewArrayExpr;
 import miniJava.AbstractSyntaxTrees.NewObjectExpr;
@@ -179,6 +181,53 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitCallStmt(CallStmt stmt, String arg) {
         //TODO 
+        String[] typeStrings = new String[0];
+        if(stmt.methodRef instanceof ThisRef)
+        {
+            error.reportError("This keyword is not callable");
+        }else if(stmt.methodRef instanceof IdRef)
+        {
+            MemberDecl dec = ScopedIdentification.GetMemberDecl(currentClass,((IdRef)stmt.methodRef).id.spelling);
+            if(dec instanceof FieldDecl)
+            {
+                error.reportError("field member is not callable");
+            }else if(dec instanceof MethodDecl)
+            {
+                int i = 0;
+                typeStrings = new String[((MethodDecl)dec).parameterDeclList.size()];
+                for (ParameterDecl param : ((MethodDecl)dec).parameterDeclList) {
+                    typeStrings[i] = GetTypeFromDeclaration(param);
+                    i++;
+                }
+            }
+        }else if(stmt.methodRef instanceof QualRef)
+        {
+            QualRef qRef = (QualRef)stmt.methodRef;
+            String contextClass = qRef.ref.visit(this, null);
+            MemberDecl dec = ScopedIdentification.GetMemberDecl(contextClass,qRef.id.spelling);
+            if(dec instanceof FieldDecl)
+            {
+                error.reportError("field member is not callable");
+            }else if(dec instanceof MethodDecl)
+            {
+                int i = 0;
+                typeStrings = new String[((MethodDecl)dec).parameterDeclList.size()];
+                for (ParameterDecl param : ((MethodDecl)dec).parameterDeclList) {
+                    typeStrings[i] = GetTypeFromDeclaration(param);
+                    i++;
+                }
+            }
+        }
+
+        int i = 0;
+        for (Expression exp : stmt.argList) {
+            String expressionType = exp.visit(this, null);
+            if(!expressionType.equals(typeStrings[i])&&!expressionType.equals("null"))
+            {
+                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead.");
+            }
+            i++;
+        }
         return stmt.methodRef.visit(this, null);
     }
 
@@ -249,6 +298,55 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitCallExpr(CallExpr expr, String arg) {
+        String[] typeStrings = new String[0];
+        if(expr.functionRef instanceof ThisRef)
+        {
+            error.reportError("This keyword is not callable");
+        }else if(expr.functionRef instanceof IdRef)
+        {
+            MemberDecl dec = ScopedIdentification.GetMemberDecl(currentClass,((IdRef)expr.functionRef).id.spelling);
+            if(dec instanceof FieldDecl)
+            {
+                error.reportError("field member is not callable");
+            }else if(dec instanceof MethodDecl)
+            {
+                int i = 0;
+                typeStrings = new String[((MethodDecl)dec).parameterDeclList.size()];
+                for (ParameterDecl param : ((MethodDecl)dec).parameterDeclList) {
+                    typeStrings[i] = GetTypeFromDeclaration(param);
+                    i++;
+                }
+            }
+        }else if(expr.functionRef instanceof QualRef)
+        {
+            QualRef qRef = (QualRef)expr.functionRef;
+            String contextClass = qRef.ref.visit(this, null);
+            MemberDecl dec = ScopedIdentification.GetMemberDecl(contextClass,qRef.id.spelling);
+            if(dec instanceof FieldDecl)
+            {
+                error.reportError("field member is not callable");
+            }else if(dec instanceof MethodDecl)
+            {
+                int i = 0;
+                typeStrings = new String[((MethodDecl)dec).parameterDeclList.size()];
+                for (ParameterDecl param : ((MethodDecl)dec).parameterDeclList) {
+                    typeStrings[i] = GetTypeFromDeclaration(param);
+                    i++;
+                }
+            }
+        }
+
+        int i = 0;
+        for (Expression exp : expr.argList) {
+            String expressionType = exp.visit(this, null);
+            if(!expressionType.equals(typeStrings[i])&&!expressionType.equals("null"))
+            {
+                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead.");
+            }
+            i++;
+        }
+        
+
         return expr.functionRef.visit(this, null);
     }
 
