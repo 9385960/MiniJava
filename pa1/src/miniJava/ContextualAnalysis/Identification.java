@@ -283,6 +283,11 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitIdRef(IdRef ref, Context arg) {
         ref.id.visit(this, arg);
         arg.SetContextClass(GetTypeFromId(ref.id));
+        Boolean isStaticRef = GetStaticFromId(ref.id);
+        if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling))
+        {
+            error.reportError("Cannot access member "+ref.id.spelling);
+        }
         //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
     }
