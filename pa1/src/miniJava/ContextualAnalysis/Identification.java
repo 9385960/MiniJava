@@ -49,6 +49,7 @@ public class Identification implements Visitor<Context,Context> {
 
     private String varname = "";
     private boolean insideDecl = false;
+    private boolean insideCall = false;
 
     public void identify(AST ast, ErrorReporter e)
     {
@@ -173,6 +174,7 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitCallStmt(CallStmt stmt, Context arg) {
+        insideCall = true;
         if(stmt.methodRef instanceof ThisRef)
         {
             error.reportError("Keyword this is not callable");
@@ -182,6 +184,7 @@ public class Identification implements Visitor<Context,Context> {
         for (Expression e: stmt.argList) {
             e.visit(this, arg);
         }
+        insideCall = false;
         return arg;
     }
 
@@ -252,10 +255,12 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitCallExpr(CallExpr expr, Context arg) {
+        insideCall = true;
         expr.functionRef.visit(this, arg.CopyContext());
         for (Expression e: expr.argList) {
             e.visit(this, arg);
         }
+        insideCall = false;
         return arg;
     }
 
@@ -334,6 +339,10 @@ public class Identification implements Visitor<Context,Context> {
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
+            if(!insideCall&&(decl instanceof MethodDecl))
+            {
+                error.reportError("Must call "+id.spelling+" cannot use as variable.");
+            }
             if(decl != null)
             {
                 id.decl = decl;

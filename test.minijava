@@ -1,11 +1,16 @@
-/*** line 7: cannot reference non-static symbol "x" in static context
+/*** line 11: reference "pubfn" does not denote a field or a variable
  * COMP 520
  * Identification
  */
-class fail318 { 	
-    public static void main(String[] args) {
-        int y = x + 3;
+class TestClass {
+        
+    public static void staticContext() {
+
+        int x = 0;
+
+        x = pubfn;
     }
-    
-    public int x;
+        
+        
+    public static int pubfn() { return 1; }
 }
