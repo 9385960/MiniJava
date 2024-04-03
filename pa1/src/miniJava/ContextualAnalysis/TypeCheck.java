@@ -231,12 +231,12 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitIxExpr(IxExpr expr, String arg) {
         String t1 = expr.ixExpr.visit(this,null);
-        if(!t1.contains("Array"))
-        {
-            error.reportError("Cannot index into non array type "+t1);
-        }else{
-            t1 = t1.substring(5);
-        }
+        //if(!t1.contains("Array"))
+        //{
+            //error.reportError("Cannot index into non array type "+t1);
+        //}else{
+            //t1 = t1.substring(5);
+        //}
         
         if(!t1.equals("INT"))
         {

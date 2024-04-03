@@ -1,11 +1,14 @@
-/*** line 9: class "Missing" has no declaration
+/**
  * COMP 520
- * Identification
+ * Array creation and update
  */
-class Fail301 {
-
-    int x;
-
-    Missing c;
+class Pass312 {
+    public static void main(String [] args) {
+        int a = 2;
+        int [] b = new int [ 2 * 5 - 3];
+        b[0] = 13;
+        boolean c = b[a-2] > a;
+        if (c)
+            b[a-1] = b[a-2];
+    }
 }
-
