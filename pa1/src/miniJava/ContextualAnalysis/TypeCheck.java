@@ -267,7 +267,11 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitQRef(QualRef ref, String arg) {
         //TODO return q ref type
-        return "";
+        String t = ref.ref.visit(this, null);
+
+        String idname = ref.id.spelling;
+        Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
+        return GetTypeFromDeclaration(decl);
     }
 
     @Override
@@ -303,6 +307,34 @@ public class TypeCheck implements Visitor<String,String> {
     private String GetTypeFromId(Identifier id)
     {
         Declaration decl = id.decl;
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl.type instanceof BaseType)
+        {
+            return ((BaseType)decl.type).typeKind.toString();
+        }else if(decl.type instanceof ClassType)
+        {
+            return ((ClassType)decl.type).className.spelling;
+        }else if(decl.type instanceof ArrayType)
+        {
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            String prefix = "Array";
+            return(prefix+cName);          
+        }else{
+           return(decl.name);
+        }
+    }
+    private String GetTypeFromDeclaration(Declaration decl)
+    {
         if(decl == null)
         {
             return null;

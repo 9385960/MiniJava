@@ -224,4 +224,16 @@ public class ScopedIdentification {
 
         return false;
     }
+    public static Declaration GetMemberDecl(String className, String idName)
+    {
+        if(level1.containsKey(className))
+        {
+            HashMap<String,MemberDecl> decl = level1.get(className);
+            if(decl.containsKey(idName))
+            {
+                return decl.get(idName);
+            }
+        }
+        return null;
+    }
 }
