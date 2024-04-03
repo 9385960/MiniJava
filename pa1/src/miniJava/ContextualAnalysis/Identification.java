@@ -78,6 +78,7 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitFieldDecl(FieldDecl fd, Context arg) {
+        fd.type.visit(this, arg);
         return arg;
     }
 
@@ -117,6 +118,10 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitClassType(ClassType type, Context arg) {
+        if(!ScopedIdentification.IsClass(type.className.spelling))
+        {
+            error.reportError("Cannot find class "+ type.className.spelling);
+        }
         return arg;
     }
 
