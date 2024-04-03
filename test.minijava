@@ -1,13 +1,9 @@
-/*** 
+/*** line 7: duplicate declaration of member "foo" 
  * COMP 520
- * Identification - static method invocation
+ * Identification
  */
-class Pass308 {         
-    public static void main(String[] args) {
-        int x = foo(20);
-    }
-    
-    public static int foo(int parm) {
-        return 50;
-    }
+class fail302 {
+
+    public int foo;
+    private void foo() {}
 }
