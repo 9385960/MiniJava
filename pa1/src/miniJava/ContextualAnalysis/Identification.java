@@ -292,10 +292,6 @@ public class Identification implements Visitor<Context,Context> {
         ref.id.visit(this, arg);
         arg.SetContextClass(GetTypeFromId(ref.id));
         Boolean isStaticRef = GetStaticFromId(ref.id);
-        //System.out.println(ref.id.spelling);
-        //System.out.println(isStaticRef);
-        //System.out.println(arg.GetStaticContext());
-        //System.out.println(ScopedIdentification.IsClass(ref.id.spelling));
         if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling)&&!ScopedIdentification.IsClass(ref.id.spelling)&&!insideQref)
         {
             error.reportError("Cannot access member "+ref.id.spelling);
@@ -340,10 +336,8 @@ public class Identification implements Visitor<Context,Context> {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
             if(decl != null)
             {
-                //System.out.println("Declaration found");
                 id.decl = decl;
             }else {
-                //System.out.println("Declaration not found");
                 error.reportError("Identifier for "+id.spelling+" does not exist.");
             }
         }        
@@ -395,35 +389,6 @@ public class Identification implements Visitor<Context,Context> {
             }
             String postfix = "Array";
             return(cName+postfix);          
-        }else{
-           return(decl.name);
-        }
-    }
-
-    private String GetTypeFromDeclaration(Declaration decl)
-    {
-        if(decl == null)
-        {
-            return null;
-        }
-        if(decl.type instanceof BaseType)
-        {
-            return ((BaseType)decl.type).typeKind.toString();
-        }else if(decl.type instanceof ClassType)
-        {
-            return ((ClassType)decl.type).className.spelling;
-        }else if(decl.type instanceof ArrayType)
-        {
-            TypeDenoter type = ((ArrayType)decl.type).eltType;
-            String cName = "";
-            if(type instanceof BaseType)
-            {
-                cName = type.typeKind.toString();
-            }else if(type instanceof ClassType){
-                cName = ((ClassType)type).className.spelling;
-            }
-            String prefix = "Array";
-            return(prefix+cName);          
         }else{
            return(decl.name);
         }

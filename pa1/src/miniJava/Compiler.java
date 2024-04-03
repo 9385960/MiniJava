@@ -3,8 +3,6 @@ package miniJava;
 import java.io.FileInputStream;
 
 import miniJava.AbstractSyntaxTrees.AST;
-import miniJava.AbstractSyntaxTrees.ASTDisplay;
-import miniJava.ContextualAnalysis.SinglePassTypeCheck;
 import miniJava.ContextualAnalysis.TypeCheck;
 import miniJava.ContextualAnalysis.Identification;
 import miniJava.ContextualAnalysis.ScopedIdentification;

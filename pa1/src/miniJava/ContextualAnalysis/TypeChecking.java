@@ -1,12 +1,8 @@
 package miniJava.ContextualAnalysis;
 
-import java.lang.ProcessBuilder.Redirect.Type;
-
 import miniJava.ErrorReporter;
 import miniJava.AbstractSyntaxTrees.Operator;
-import miniJava.AbstractSyntaxTrees.TypeDenoter;
 import miniJava.AbstractSyntaxTrees.TypeKind;
-import miniJava.SyntacticAnalyzer.TokenType;
 
 public class TypeChecking {
     
