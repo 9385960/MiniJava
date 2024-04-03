@@ -41,10 +41,13 @@ import miniJava.AbstractSyntaxTrees.VarDecl;
 import miniJava.AbstractSyntaxTrees.VarDeclStmt;
 import miniJava.AbstractSyntaxTrees.Visitor;
 import miniJava.AbstractSyntaxTrees.WhileStmt;
+import miniJava.SyntacticAnalyzer.TokenType;
 
 public class TypeCheck implements Visitor<String,String> {
 
     private ErrorReporter error;
+
+    private String currentClass;
 
     public void typecheck(AST ast,ErrorReporter e)
     {
@@ -64,6 +67,7 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitClassDecl(ClassDecl cd, String arg) {
+        currentClass = cd.name;
         for (FieldDecl f: cd.fieldDeclList)
         {
             f.visit(this, null);
@@ -168,7 +172,7 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitCallStmt(CallStmt stmt, String arg) {
         //TODO 
-        return "";
+        return stmt.methodRef.visit(this, null);
     }
 
     @Override
@@ -180,12 +184,22 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitIfStmt(IfStmt stmt, String arg) {
         //TODO
+        String t1 = stmt.cond.visit(this, null);
+        if(!t1.equals(TokenType.BOOLEAN.toString()))
+        {
+            error.reportError("Expression inside if statement must be a boolean");
+        }
         return "";
     }
 
     @Override
     public String visitWhileStmt(WhileStmt stmt, String arg) {
         //TODO
+        String t1 = stmt.cond.visit(this, null);
+        if(!t1.equals(TokenType.BOOLEAN.toString()))
+        {
+            error.reportError("Expression inside while statement must be a boolean");
+        }
         return "";
     }
 
@@ -242,7 +256,7 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitThisRef(ThisRef ref, String arg) {
         // TODO return type of this
-        return "";
+        return currentClass;
     }
 
     @Override
@@ -309,8 +323,8 @@ public class TypeCheck implements Visitor<String,String> {
             }else if(type instanceof ClassType){
                 cName = ((ClassType)type).className.spelling;
             }
-            String postfix = "Array";
-            return(cName+postfix);          
+            String prefix = "Array";
+            return(prefix+cName);          
         }else{
            return(decl.name);
         }
