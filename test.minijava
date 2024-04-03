@@ -1,9 +1,13 @@
-/**
+/*** 
  * COMP 520
- * Identification
+ * Identification - static method invocation
  */
-class Pass305 { 	
+class Pass308 {         
     public static void main(String[] args) {
-        System.out.println(3);
-    } 
+        int x = foo(20);
+    }
+    
+    public static int foo(int parm) {
+        return 50;
+    }
 }

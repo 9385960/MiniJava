@@ -14,6 +14,7 @@ import miniJava.AbstractSyntaxTrees.CallExpr;
 import miniJava.AbstractSyntaxTrees.CallStmt;
 import miniJava.AbstractSyntaxTrees.ClassDecl;
 import miniJava.AbstractSyntaxTrees.ClassType;
+import miniJava.AbstractSyntaxTrees.Declaration;
 import miniJava.AbstractSyntaxTrees.FieldDecl;
 import miniJava.AbstractSyntaxTrees.IdRef;
 import miniJava.AbstractSyntaxTrees.Identifier;
@@ -34,6 +35,7 @@ import miniJava.AbstractSyntaxTrees.RefExpr;
 import miniJava.AbstractSyntaxTrees.ReturnStmt;
 import miniJava.AbstractSyntaxTrees.Statement;
 import miniJava.AbstractSyntaxTrees.ThisRef;
+import miniJava.AbstractSyntaxTrees.TypeDenoter;
 import miniJava.AbstractSyntaxTrees.UnaryExpr;
 import miniJava.AbstractSyntaxTrees.VarDecl;
 import miniJava.AbstractSyntaxTrees.VarDeclStmt;
@@ -217,7 +219,7 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitCallExpr(CallExpr expr, String arg) {
-        return "";
+        return expr.functionRef.visit(this, null);
     }
 
     @Override
@@ -261,7 +263,7 @@ public class TypeCheck implements Visitor<String,String> {
         {
             return "";
         }
-        return id.decl.visit(this, null);
+        return GetTypeFromId(id);
     }
 
     @Override
@@ -284,4 +286,33 @@ public class TypeCheck implements Visitor<String,String> {
         return "null";
     }
     
+    private String GetTypeFromId(Identifier id)
+    {
+        Declaration decl = id.decl;
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl.type instanceof BaseType)
+        {
+            return ((BaseType)decl.type).typeKind.toString();
+        }else if(decl.type instanceof ClassType)
+        {
+            return ((ClassType)decl.type).className.spelling;
+        }else if(decl.type instanceof ArrayType)
+        {
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            String postfix = "Array";
+            return(cName+postfix);          
+        }else{
+           return(decl.name);
+        }
+    }
 }

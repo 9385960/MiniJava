@@ -50,6 +50,8 @@ public class Compiler {
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
+			ASTDisplay disp = new ASTDisplay();
+			disp.showTree(tree);
 			Identification id = new Identification();
 			id.identify(tree,error);
 			if(error.hasErrors())
@@ -68,9 +70,6 @@ public class Compiler {
 				}
 			}
 			
-		}
-		//ASTDisplay disp = new ASTDisplay();
-		//disp.showTree(tree);
-		
+		}		
 	}
 }
