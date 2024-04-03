@@ -47,6 +47,9 @@ public class Identification implements Visitor<Context,Context> {
 
     private boolean insideQref = false;
 
+    private String varname = "";
+    private boolean insideDecl = false;
+
     public void identify(AST ast, ErrorReporter e)
     {
         error = e;
@@ -110,6 +113,7 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitVarDecl(VarDecl decl, Context arg) {
         //decl.type.visit(this,arg);
         ScopedIdentification.addDeclaration(decl.name, decl);
+        varname=decl.name;
         return arg;
     }
 
@@ -145,8 +149,10 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitVardeclStmt(VarDeclStmt stmt, Context arg) {
+        insideDecl = true;
         stmt.varDecl.visit(this,arg);
         stmt.initExp.visit(this, arg);
+        insideDecl = false;
         return arg;
     }
 
@@ -318,7 +324,13 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitIdentifier(Identifier id, Context arg) {
-
+        if(insideDecl)
+        {
+            if(id.spelling.equals(varname))
+            {
+                error.reportError("Cannot reference "+varname+" during assignment.");
+            }
+        }
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
