@@ -155,7 +155,14 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitIxAssignStmt(IxAssignStmt stmt, String arg) {
-        String t1 = stmt.ref.visit(this, null).substring(5);
+        String t1 = stmt.ref.visit(this, null);
+        if(!t1.contains("Array"))
+        {
+            error.reportError("Cannot index into non array type "+t1);
+        }else{
+            t1 = t1.substring(5);
+        }
+        
         String t2 = stmt.ix.visit(this, null);
         String t3 = stmt.exp.visit(this, null);
         if(!t2.equals("INT"))
@@ -224,11 +231,18 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitIxExpr(IxExpr expr, String arg) {
         String t1 = expr.ixExpr.visit(this,null);
+        if(!t1.contains("Array"))
+        {
+            error.reportError("Cannot index into non array type "+t1);
+        }else{
+            t1 = t1.substring(5);
+        }
+        
         if(!t1.equals("INT"))
         {
             error.reportError("Cannot index into array with non-integer");
         }
-        return expr.ref.visit(this,null).substring(5);
+        return t1;
     }
 
     @Override

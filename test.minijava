@@ -1,33 +1,11 @@
-/**
+/*** line 9: class "Missing" has no declaration
  * COMP 520
- * mutual dependencies in classes
+ * Identification
  */
-class Pass392 {
+class Fail301 {
 
-    public static void main(String [] args) { 
+    int x;
 
-	A ai = new A();
-	B bi = new B();
-
-	ai.set();
-	if (null == bi.get())
-	    return;
-    }
+    Missing c;
 }
 
-class A {
-    B b;
-
-    public void set() {
-        b = null;
-    }
-
-}
-
-class B {
-    A a;
-    
-    public A get() {
-        return a;
-    }
-}
