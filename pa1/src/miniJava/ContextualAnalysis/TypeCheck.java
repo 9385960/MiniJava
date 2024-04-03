@@ -182,6 +182,7 @@ public class TypeCheck implements Visitor<String,String> {
     public String visitCallStmt(CallStmt stmt, String arg) {
         //TODO 
         String[] typeStrings = new String[0];
+        String toReturn = "";
         if(stmt.methodRef instanceof ThisRef)
         {
             error.reportError("This keyword is not callable");
@@ -199,6 +200,7 @@ public class TypeCheck implements Visitor<String,String> {
                     typeStrings[i] = GetTypeFromDeclaration(param);
                     i++;
                 }
+                toReturn = GetTypeFromDeclaration(dec);
             }
         }else if(stmt.methodRef instanceof QualRef)
         {
@@ -217,6 +219,7 @@ public class TypeCheck implements Visitor<String,String> {
                     i++;
                 }
             }
+            toReturn = GetTypeFromDeclaration(dec);
         }
 
         int i = 0;
@@ -228,7 +231,7 @@ public class TypeCheck implements Visitor<String,String> {
             }
             i++;
         }
-        return stmt.methodRef.visit(this, null);
+        return toReturn;
     }
 
     @Override
@@ -299,6 +302,7 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitCallExpr(CallExpr expr, String arg) {
         String[] typeStrings = new String[0];
+        String toReturn = "";
         if(expr.functionRef instanceof ThisRef)
         {
             error.reportError("This keyword is not callable");
@@ -316,6 +320,7 @@ public class TypeCheck implements Visitor<String,String> {
                     typeStrings[i] = GetTypeFromDeclaration(param);
                     i++;
                 }
+                toReturn = GetTypeFromDeclaration(dec);
             }
         }else if(expr.functionRef instanceof QualRef)
         {
@@ -333,6 +338,7 @@ public class TypeCheck implements Visitor<String,String> {
                     typeStrings[i] = GetTypeFromDeclaration(param);
                     i++;
                 }
+                toReturn = GetTypeFromDeclaration(dec);
             }
         }
 
@@ -347,7 +353,7 @@ public class TypeCheck implements Visitor<String,String> {
         }
         
 
-        return expr.functionRef.visit(this, null);
+        return toReturn;
     }
 
     @Override

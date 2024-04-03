@@ -21,12 +21,9 @@ public class ScopedIdentification {
         FieldDeclList fields = new FieldDeclList();
 		MethodDeclList methods = new MethodDeclList();
         TypeDenoter type = new ClassType(id, null);
-        MemberDecl toadd = new FieldDecl(false,true,type,"out",null);
-        ParameterDeclList parameterList = new ParameterDeclList();
-		StatementList statementList = new StatementList();
-        MethodDecl methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
-        AddClassMember("System", "out", methodtoadd);
-        methods.add(methodtoadd);
+        FieldDecl toadd = new FieldDecl(false,true,type,"out",null);
+        AddClassMember("System", "out", toadd);
+        fields.add(toadd);
         ClassDecl classDecl = new ClassDecl("System", fields, methods, null);
 
         AddClass("System", classDecl);
@@ -39,11 +36,11 @@ public class ScopedIdentification {
 
         type = new BaseType(TypeKind.VOID, null);
         toadd = new FieldDecl(false,false,type,"println",null);
-        parameterList = new ParameterDeclList();
+        ParameterDeclList parameterList = new ParameterDeclList();
         TypeDenoter parameterType = new BaseType(TypeKind.INT, null);
         parameterList.add(new ParameterDecl(parameterType, "n", null));
-		statementList = new StatementList();
-        methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
+		StatementList statementList = new StatementList();
+        MethodDecl methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
         AddClassMember("_PrintStream", "println", methodtoadd);
         methods.add(methodtoadd);
         classDecl = new ClassDecl("_PrintStream", fields, methods, null);
