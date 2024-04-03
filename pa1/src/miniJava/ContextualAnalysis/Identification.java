@@ -297,6 +297,9 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitQRef(QualRef ref, Context arg) {
         ref.ref.visit(this, arg);
+        insideQref = true;
+        ref.id.visit(this, arg);
+        insideQref = false;
         if(ref.ref instanceof IdRef)
         {
             IdRef idref = (IdRef)ref.ref;
@@ -308,9 +311,6 @@ public class Identification implements Visitor<Context,Context> {
                 }
             }
         }
-        insideQref = true;
-        ref.id.visit(this, arg);
-        insideQref = false;
         arg.SetContextClass(GetTypeFromId(ref.id));
         //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
