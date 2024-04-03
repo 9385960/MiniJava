@@ -324,7 +324,7 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitIdentifier(Identifier id, Context arg) {
-        if(insideDecl)
+        if(insideDecl&&!insideQref)
         {
             if(id.spelling.equals(varname))
             {

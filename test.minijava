@@ -1,14 +1,16 @@
-/*** line 11: cannot reference "x" within the initializing expression of the declaration for "x"
+/**
  * COMP 520
  * Identification
  */
-class fail305 { 	
-
-    int x;
-    int y;
-
-    public void foo() {
-	int x = y + x;
+class Pass324 {         
+    public static void main(String[] args) {
+        Pass324 p = new Pass324();
+        int x = p.p() + p.x;
+    }
+    
+    public int x;
+    
+    public int p() {
+        return 3;
     }
 }
-
