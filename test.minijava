@@ -1,14 +1,20 @@
-/*** line 12: cannot return a value from a void method
+/**
  * COMP 520
- * Type Checking
+ * Identification
  */
-class fail313 { 	
-    public static void main(String[] args) {
-	fail313 f = new fail313();
-	f.noresult();
+class Pass325 {
+
+    private void Foo() {
+	Foiled.back.mine = 3;
     }
-    
-    public void noresult() {
-	return 10;
-    }
+	
+    public static int mine;
+}
+
+
+class Foiled {
+
+    public static void main(String[] args) {}
+
+    static Pass325 back;
 }

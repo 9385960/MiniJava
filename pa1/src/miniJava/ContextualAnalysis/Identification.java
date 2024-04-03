@@ -284,7 +284,7 @@ public class Identification implements Visitor<Context,Context> {
         ref.id.visit(this, arg);
         arg.SetContextClass(GetTypeFromId(ref.id));
         Boolean isStaticRef = GetStaticFromId(ref.id);
-        if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling))
+        if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling)&&!ScopedIdentification.IsClass(ref.id.spelling))
         {
             error.reportError("Cannot access member "+ref.id.spelling);
         }
@@ -295,9 +295,6 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitQRef(QualRef ref, Context arg) {
         ref.ref.visit(this, arg);
-        ref.id.visit(this, arg);
-        arg.SetStaticContext(false);
-
         arg.SetContextClass(GetTypeFromId(ref.id));
         //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
