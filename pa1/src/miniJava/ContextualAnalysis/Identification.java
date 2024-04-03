@@ -45,6 +45,8 @@ import miniJava.AbstractSyntaxTrees.WhileStmt;
 public class Identification implements Visitor<Context,Context> {
     ErrorReporter error;
 
+    private boolean insideQref = false;
+
     public void identify(AST ast, ErrorReporter e)
     {
         error = e;
@@ -284,7 +286,7 @@ public class Identification implements Visitor<Context,Context> {
         ref.id.visit(this, arg);
         arg.SetContextClass(GetTypeFromId(ref.id));
         Boolean isStaticRef = GetStaticFromId(ref.id);
-        if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling)&&!ScopedIdentification.IsClass(ref.id.spelling))
+        if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling)&&!ScopedIdentification.IsClass(ref.id.spelling)&&insideQref)
         {
             error.reportError("Cannot access member "+ref.id.spelling);
         }
@@ -295,6 +297,9 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitQRef(QualRef ref, Context arg) {
         ref.ref.visit(this, arg);
+        insideQref = true;
+        ref.id.visit(this, arg);
+        insideQref = false;
         arg.SetContextClass(GetTypeFromId(ref.id));
         //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;

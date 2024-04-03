@@ -1,20 +1,14 @@
-/**
+/*** line 10: reference "d" of type "D []" does not have a public field "x"
  * COMP 520
  * Identification
  */
-class Pass325 {
+class Fail328 {
 
-    private void Foo() {
-	Foiled.back.mine = 3;
+    public D [] d;
+
+    public void f() {
+	int y = d.x;
     }
-	
-    public static int mine;
 }
 
-
-class Foiled {
-
-    public static void main(String[] args) {}
-
-    static Pass325 back;
-}
+class D { public int x; }
