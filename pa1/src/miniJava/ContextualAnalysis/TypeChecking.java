@@ -50,6 +50,15 @@ public class TypeChecking {
             {
                 return TypeKind.BOOLEAN.toString();
             }
+            if(t1.equals("null")||t2.equals("null"))
+            {
+                Boolean t1NotObject = t1.equals(TypeKind.INT.toString())||t1.equals(TypeKind.BOOLEAN.toString())||t1.equals("Array"+TypeKind.INT.toString());
+                Boolean t2NotObject = t2.equals(TypeKind.INT.toString())||t2.equals(TypeKind.BOOLEAN.toString())||t2.equals("Array"+TypeKind.INT.toString());
+                if(!(t1NotObject||t2NotObject))
+                {
+                    return TypeKind.BOOLEAN.toString();
+                }
+            }
         }
         error.reportError("Unsuported operation "+op.spelling+" between "+t1+" and "+t2);
         return TypeKind.ERROR.toString();
