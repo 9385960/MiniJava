@@ -297,6 +297,17 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitQRef(QualRef ref, Context arg) {
         ref.ref.visit(this, arg);
+        if(ref.ref instanceof IdRef)
+        {
+            IdRef idref = (IdRef)ref.ref;
+            if(ScopedIdentification.IsClass(idref.id.spelling))
+            {
+                if(!GetStaticFromId(ref.id))
+                {
+                    error.reportError("Cannot access non static member "+ref.id.spelling+" from static context.");
+                }
+            }
+        }
         insideQref = true;
         ref.id.visit(this, arg);
         insideQref = false;
