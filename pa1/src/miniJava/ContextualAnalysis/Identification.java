@@ -278,19 +278,18 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitIdRef(IdRef ref, Context arg) {
         ref.id.visit(this, arg);
         arg.SetContextClass(GetTypeFromId(ref.id));
-        arg.SetStaticContext(GetStaticFromId(ref.id));
+        //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
     }
 
     @Override
     public Context visitQRef(QualRef ref, Context arg) {
         ref.ref.visit(this, arg);
-        
         ref.id.visit(this, arg);
-        
+        arg.SetStaticContext(false);
 
         arg.SetContextClass(GetTypeFromId(ref.id));
-        arg.SetStaticContext(GetStaticFromId(ref.id));
+        //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
     }
 
