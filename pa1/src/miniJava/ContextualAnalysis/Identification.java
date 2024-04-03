@@ -105,7 +105,7 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitVarDecl(VarDecl decl, Context arg) {
-        decl.type.visit(this,arg);
+        //decl.type.visit(this,arg);
         ScopedIdentification.addDeclaration(decl.name, decl);
         return arg;
     }
@@ -356,6 +356,35 @@ public class Identification implements Visitor<Context,Context> {
             }
             String postfix = "Array";
             return(cName+postfix);          
+        }else{
+           return(decl.name);
+        }
+    }
+
+    private String GetTypeFromDeclaration(Declaration decl)
+    {
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl.type instanceof BaseType)
+        {
+            return ((BaseType)decl.type).typeKind.toString();
+        }else if(decl.type instanceof ClassType)
+        {
+            return ((ClassType)decl.type).className.spelling;
+        }else if(decl.type instanceof ArrayType)
+        {
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            String prefix = "Array";
+            return(prefix+cName);          
         }else{
            return(decl.name);
         }
