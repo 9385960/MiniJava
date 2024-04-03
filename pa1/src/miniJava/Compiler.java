@@ -49,19 +49,21 @@ public class Compiler {
 		{
 			System.out.println("Error");
 			error.outputErrors();
-		}
-		ASTDisplay disp = new ASTDisplay();
-		disp.showTree(tree);
-		Identification id = new Identification();
-		id.identify(tree,error);
-		TypeCheck t = new TypeCheck();
-		t.typecheck(tree, error);
-		if(error.hasErrors())
-		{
-			System.out.println("Error");
-			error.outputErrors();
 		}else{
-			System.out.println("Success");			
+			Identification id = new Identification();
+			id.identify(tree,error);
+			TypeCheck t = new TypeCheck();
+			t.typecheck(tree, error);
+			if(error.hasErrors())
+			{
+				System.out.println("Error");
+				error.outputErrors();
+			}else{
+				System.out.println("Success");			
+			}
 		}
+		//ASTDisplay disp = new ASTDisplay();
+		//disp.showTree(tree);
+		
 	}
 }
