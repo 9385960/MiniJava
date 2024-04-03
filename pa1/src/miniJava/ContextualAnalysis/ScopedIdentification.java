@@ -148,46 +148,12 @@ public class ScopedIdentification {
                 return map.get(s);
             }
         }
-        if(level0.containsKey(c.GetContextClass()))
+        if(level1.containsKey(c.GetContextClass()))
         {
             HashMap<String,MemberDecl> members = level1.get(c.GetContextClass());
             if(members.containsKey(s))
             {
                 MemberDecl dec = members.get(s);
-                if(dec.isStatic)
-                {
-                    if(c.GetStaticContext())
-                    {
-                        if(dec.isPrivate)
-                        {
-                            if(c.GetClassName().equals(c.GetContextClass()))
-                            {
-                                return dec;
-                            }else{
-                                error.reportError("Cannot acces private member "+s+" of "+c.GetContextClass()+" in "+c.GetClassName());
-                                return null;
-                            }
-                        }
-                    }else{
-                        error.reportError("Cannot acces static member "+s+" in a non static context");
-                    }      
-                }else{
-                    if(!c.GetStaticContext())
-                    {
-                        if(dec.isPrivate)
-                        {
-                            if(c.GetClassName().equals(c.GetContextClass()))
-                            {
-                                return dec;
-                            }else{
-                                error.reportError("Cannot acces private member "+s+" of "+c.GetContextClass()+" in "+c.GetClassName());
-                                return null;
-                            }
-                        }
-                    }else{
-                        error.reportError("Cannot acces non static member "+s+" in a static context");
-                    }
-                }
                 if(dec.isPrivate)
                 {
                     if(c.GetClassName().equals(c.GetContextClass()))
