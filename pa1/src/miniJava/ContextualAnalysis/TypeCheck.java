@@ -1,7 +1,5 @@
 package miniJava.ContextualAnalysis;
 
-import javax.lang.model.type.TypeKind;
-
 import miniJava.ErrorReporter;
 import miniJava.AbstractSyntaxTrees.AST;
 import miniJava.AbstractSyntaxTrees.ArrayType;
@@ -38,6 +36,7 @@ import miniJava.AbstractSyntaxTrees.ReturnStmt;
 import miniJava.AbstractSyntaxTrees.Statement;
 import miniJava.AbstractSyntaxTrees.ThisRef;
 import miniJava.AbstractSyntaxTrees.TypeDenoter;
+import miniJava.AbstractSyntaxTrees.TypeKind;
 import miniJava.AbstractSyntaxTrees.UnaryExpr;
 import miniJava.AbstractSyntaxTrees.VarDecl;
 import miniJava.AbstractSyntaxTrees.VarDeclStmt;
@@ -50,6 +49,8 @@ public class TypeCheck implements Visitor<String,String> {
     private ErrorReporter error;
 
     private String currentClass;
+
+    private boolean insideVoid = false;
 
     public void typecheck(AST ast,ErrorReporter e)
     {
@@ -88,7 +89,13 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitMethodDecl(MethodDecl md, String arg) {
-             
+        if(md.type.typeKind == TypeKind.VOID)
+        {
+            insideVoid = true;
+        }else{
+            insideVoid = false;
+        }
+
         for (ParameterDecl pd: md.parameterDeclList) {
             pd.visit(this, null);
         }
@@ -237,6 +244,10 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitReturnStmt(ReturnStmt stmt, String arg) {
         // TODO Auto-generated method stub
+        if(insideVoid&&stmt!=null)
+        {
+            error.reportError("Cannot return something from a void method.");
+        }
         return stmt.returnExpr.visit(this, null);
     }
 
