@@ -385,6 +385,10 @@ public class TypeCheck implements Visitor<String,String> {
 
         String idname = ref.id.spelling;
         Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
+        if(decl instanceof MethodDecl)
+        {
+            error.reportError("Cannot have method in qualified reference.");
+        }
         return GetTypeFromDeclaration(decl);
     }
 
