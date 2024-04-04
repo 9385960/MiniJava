@@ -154,6 +154,18 @@ public class Identification implements Visitor<Context,Context> {
         stmt.varDecl.visit(this,arg);
         stmt.initExp.visit(this, arg);
         insideDecl = false;
+        if(stmt.initExp instanceof RefExpr)
+        {
+            RefExpr exp = (RefExpr)stmt.initExp;
+            if(exp.ref instanceof IdRef)
+            {
+                IdRef id = (IdRef)exp.ref;
+                if(ScopedIdentification.IsClass(id.id.spelling)&&!ScopedIdentification.IsScopeVariable(id.id.spelling))
+                {
+                    error.reportError(id.id.spelling+" cannot be resolved to a variable.");
+                }
+            }
+        }   
         return arg;
     }
 

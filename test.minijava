@@ -1,16 +1,13 @@
-/*** line 11: reference "pubfn" does not denote a field or a variable
+/*** line 7: reference "F02" is not a variable
  * COMP 520
  * Identification
  */
-class TestClass {
-        
-    public static void staticContext() {
-
-        int x = 0;
-
-        x = pubfn;
+class fail335 { 	
+    public static void main(String[] args) {
+        F02 c = F02;
     }
-        
-        
-    public static int pubfn() { return 1; }
+}
+
+class F02 {
+    public int x;
 }
