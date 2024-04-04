@@ -1,12 +1,6 @@
 package miniJava.ContextualAnalysis;
 
-import miniJava.AbstractSyntaxTrees.Declaration;
-import miniJava.AbstractSyntaxTrees.MethodDecl;
-
 public class Context {
-    private int depth = 0;
-
-    private String type;
 
     private String className;
 
@@ -14,46 +8,16 @@ public class Context {
 
     private boolean inStaticContext = false;
 
-    private boolean isFromClassType = false;
+    private String type;
 
-    private boolean wantArrayType = false;
-
-    private MethodDecl d;
-
-    public void SetMethodDec(MethodDecl decl)
+    public void SetType(String t)
     {
-        d = decl;
+        type = t;
     }
 
-    public MethodDecl GetMethodDec()
+    public String GetType()
     {
-        return d;
-    }
-
-    public void SetWantArray(boolean w)
-    {
-        wantArrayType = w;
-    }
-
-    public boolean GetWantArray()
-    {
-        return wantArrayType;
-    }
-
-
-    public void SetFromClassType(boolean s)
-    {
-        isFromClassType = s;
-    }
-
-    public boolean GetFromClassType()
-    {
-        return isFromClassType;
-    }
-
-    public void IncrementDepth()
-    {
-        depth += 1;
+        return type;
     }
 
     public void SetContextClass(String c)
@@ -86,36 +50,14 @@ public class Context {
         return className;
     }
 
-    public int GetDepth()
-    {
-        return depth;
-    }
-
-    public void SetDepth(int d)
-    {
-        depth = d;
-    }
-
-    public void SetType(String s)
-    {
-        type = s;
-    }
-
-    public String GetType()
-    {
-        return type;
-    }
 
     public Context CopyContext()
     {
         Context toReturn = new Context();
         toReturn.SetClassName(this.className);
-        toReturn.SetDepth(this.depth);
-        toReturn.SetType(this.type);
         toReturn.SetContextClass(this.contextClass);
         toReturn.SetStaticContext(this.inStaticContext);
-        toReturn.SetFromClassType(this.isFromClassType);
-        toReturn.SetWantArray(this.wantArrayType);
+        toReturn.SetType(this.type);
         return toReturn;
     }
 }

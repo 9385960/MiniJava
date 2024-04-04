@@ -112,7 +112,7 @@ public class Identification implements Visitor<Context,Context> {
 
     @Override
     public Context visitVarDecl(VarDecl decl, Context arg) {
-        //decl.type.visit(this,arg);
+        decl.type.visit(this,arg);
         ScopedIdentification.addDeclaration(decl.name, decl);
         varname=decl.name;
         return arg;
