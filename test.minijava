@@ -1,13 +1,13 @@
-/*** line 7: reference "F02" is not a variable
+/*** line 11: reference "Testclass" does not denote a field or a variable
  * COMP 520
  * Identification
  */
-class fail335 { 	
-    public static void main(String[] args) {
-        F02 c = F02;
-    }
-}
+class TestClass {
+                
+    public static void staticContext() {
 
-class F02 {
-    public int x;
+        TestClass t = null;
+
+        t = TestClass;
+    }
 }
