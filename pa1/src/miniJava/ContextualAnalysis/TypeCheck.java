@@ -165,9 +165,14 @@ public class TypeCheck implements Visitor<String,String> {
     @Override
     public String visitIxAssignStmt(IxAssignStmt stmt, String arg) {
         String t1 = stmt.ref.visit(this, null);
-        if(!t1.contains("Array"))
+        if(stmt.ref instanceof IdRef)
         {
-            error.reportError("Cannot index into non array type "+t1);
+            IdRef ref = (IdRef)stmt.ref;
+            if(!IsArrayFromDecl(ref.id.decl))
+            {
+                error.reportError("Cannot index into non array type "+t1);
+                return(TypeKind.ERROR.toString());
+            }
         }else{
             t1 = t1.substring(5);
         }
@@ -295,9 +300,14 @@ public class TypeCheck implements Visitor<String,String> {
     public String visitIxExpr(IxExpr expr, String arg) {
         String t1 = expr.ixExpr.visit(this,null);
         String t2 = expr.ref.visit(this, null);
-        if(!t2.contains("Array"))
+        if(expr.ref instanceof IdRef)
         {
-            error.reportError("Cannot index into non array type "+t1);
+            IdRef ref = (IdRef)expr.ref;
+            if(!IsArrayFromDecl(ref.id.decl))
+            {
+                error.reportError("Cannot index into non array type "+t2);
+                return(TypeKind.ERROR.toString());
+            }
         }else{
             t2 = t2.substring(5);
         }
@@ -495,5 +505,13 @@ public class TypeCheck implements Visitor<String,String> {
         }else{
            return(decl.name);
         }
+    }
+    private boolean IsArrayFromDecl(Declaration decl)
+    {
+        if(decl.type instanceof ArrayType)
+        {
+            return true;        
+        }
+        return false;
     }
 }

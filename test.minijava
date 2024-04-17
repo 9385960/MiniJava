@@ -4,16 +4,22 @@
  */
 class TestClass {
 
-    int x;
+    static ArrayTest x;
 
     public static void staticContext() {
 
-        String t = null;
-
-        t = new String();
+        Test t = x[1];
 
         int y = 3+2*4-7;
 
         System.out.println(10);
     }
+}
+
+class ArrayTest {
+    
+}
+
+class Test {
+    
 }
