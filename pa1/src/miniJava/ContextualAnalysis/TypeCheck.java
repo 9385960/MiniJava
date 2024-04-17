@@ -172,6 +172,8 @@ public class TypeCheck implements Visitor<String,String> {
             {
                 error.reportError("Cannot index into non array type "+t1);
                 return(TypeKind.ERROR.toString());
+            }else{
+                t1 = t1.substring(5);
             }
         }else{
             t1 = t1.substring(5);
@@ -307,6 +309,8 @@ public class TypeCheck implements Visitor<String,String> {
             {
                 error.reportError("Cannot index into non array type "+t2);
                 return(TypeKind.ERROR.toString());
+            }else{
+                t2 = t2.substring(5);
             }
         }else{
             t2 = t2.substring(5);
