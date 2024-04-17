@@ -3,12 +3,16 @@
  * Identification
  */
 class TestClass {
-                
+
+    int x;
+
     public static void staticContext() {
 
         String t = null;
 
         t = new String();
+
+        int y = 3+2*4-7;
 
         System.out.println(10);
     }

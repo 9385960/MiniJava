@@ -159,7 +159,30 @@ public class ModRMSIB {
 	private void Make(Reg64 rdisp, int disp, Reg r) {
 		// TODO: construct the byte and write to _b
 		// Operands: [rdisp+disp],r
-		int mod;
+		
+		//Assuming a 32 bit integer gives
+		int mod = 2;
+
+		int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+		_b.write(regByte);
+		/*if(disp >= 256)
+		{
+			int mod = 2;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}else{
+			int mod = 1;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}*/
+		if(getIdx(rdisp)==4)
+		{
+			int ss = 4<<3|getIdx(rdisp);
+			_b.write(ss);
+		}
+		x64.writeInt(_b, disp);
 	}
 	
 	// [ridx*mult+disp],r
@@ -172,6 +195,36 @@ public class ModRMSIB {
 		// TODO: construct the modrm byte and SIB byte
 		// Operands: [ridx*mult + disp], r
 		int mod, ss;
+
+		mod = 2;
+
+		int regByte = (mod<<6)|(4<<3)|(getIdx(rdisp));
+		_b.write(regByte);
+		/*if(disp >= 256)
+		{
+			int mod = 2;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}else{
+			int mod = 1;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}*/
+		if(mult == 1)
+		{
+			ss = 0;
+		}else if(mult == 2)
+		{
+			ss = 1;
+		}else if(mult == 4)
+		{
+			ss = 2;
+		}else{
+			ss = 3;
+		}
+		ss = (ss<<6)|4<<3|getIdx(ridx);
 	}
 	
 	// [rdisp+ridx*mult+disp],r
@@ -184,6 +237,36 @@ public class ModRMSIB {
 		// TODO: construct the modrm byte and SIB byte
 		// Operands: [rdisp + ridx*mult + disp], r
 		int mod, ss;
+		mod = 2;
+
+		int regByte = (mod<<6)|(4<<3)|(getIdx(rdisp));
+		_b.write(regByte);
+		/*if(disp >= 256)
+		{
+			int mod = 2;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}else{
+			int mod = 1;
+
+			int regByte = (mod<<6)|(getIdx(r)<<3|getIdx(rdisp));
+			_b.write(regByte);
+		}*/
+		if(mult == 1)
+		{
+			ss = 0;
+		}else if(mult == 2)
+		{
+			ss = 1;
+		}else if(mult == 4)
+		{
+			ss = 2;
+		}else{
+			ss = 3;
+		}
+		ss = (ss<<6)|getIdx(ridx)<<3|getIdx(rdisp);
+		_b.write(ss);
 	}
 	
 	// [disp],r

@@ -4,6 +4,7 @@ import miniJava.ErrorReporter;
 import miniJava.AbstractSyntaxTrees.*;
 import miniJava.AbstractSyntaxTrees.Package;
 import miniJava.CodeGeneration.x64.*;
+import miniJava.CodeGeneration.x64.ISA.*;
 
 public class CodeGenerator implements Visitor<Object, Object> {
 	private ErrorReporter _errors;
@@ -74,7 +75,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	
 	public void makeElf(String fname) {
 		ELFMaker elf = new ELFMaker(_errors, _asm.getSize(), 8); // bss ignored until PA5, set to 8
-		elf.outputELF(fname, _asm.getBytes(), ??); // TODO: set the location of the main method
+		elf.outputELF(fname, _asm.getBytes(), 0x00); // TODO: set the location of the main method
 	}
 	
 	private int makeMalloc() {
@@ -96,5 +97,197 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	private int makePrintln() {
 		// TODO: how can we generate the assembly to println?
 		return -1;
+	}
+
+	@Override
+	public Object visitClassDecl(ClassDecl cd, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitClassDecl'");
+	}
+
+	@Override
+	public Object visitFieldDecl(FieldDecl fd, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitFieldDecl'");
+	}
+
+	@Override
+	public Object visitMethodDecl(MethodDecl md, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitMethodDecl'");
+	}
+
+	@Override
+	public Object visitParameterDecl(ParameterDecl pd, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitParameterDecl'");
+	}
+
+	@Override
+	public Object visitVarDecl(VarDecl decl, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitVarDecl'");
+	}
+
+	@Override
+	public Object visitBaseType(BaseType type, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitBaseType'");
+	}
+
+	@Override
+	public Object visitClassType(ClassType type, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitClassType'");
+	}
+
+	@Override
+	public Object visitArrayType(ArrayType type, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitArrayType'");
+	}
+
+	@Override
+	public Object visitBlockStmt(BlockStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitBlockStmt'");
+	}
+
+	@Override
+	public Object visitVardeclStmt(VarDeclStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitVardeclStmt'");
+	}
+
+	@Override
+	public Object visitAssignStmt(AssignStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitAssignStmt'");
+	}
+
+	@Override
+	public Object visitIxAssignStmt(IxAssignStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIxAssignStmt'");
+	}
+
+	@Override
+	public Object visitCallStmt(CallStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitCallStmt'");
+	}
+
+	@Override
+	public Object visitReturnStmt(ReturnStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
+	}
+
+	@Override
+	public Object visitIfStmt(IfStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIfStmt'");
+	}
+
+	@Override
+	public Object visitWhileStmt(WhileStmt stmt, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
+	}
+
+	@Override
+	public Object visitUnaryExpr(UnaryExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitUnaryExpr'");
+	}
+
+	@Override
+	public Object visitBinaryExpr(BinaryExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitBinaryExpr'");
+	}
+
+	@Override
+	public Object visitRefExpr(RefExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitRefExpr'");
+	}
+
+	@Override
+	public Object visitIxExpr(IxExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIxExpr'");
+	}
+
+	@Override
+	public Object visitCallExpr(CallExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitCallExpr'");
+	}
+
+	@Override
+	public Object visitLiteralExpr(LiteralExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitLiteralExpr'");
+	}
+
+	@Override
+	public Object visitNewObjectExpr(NewObjectExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitNewObjectExpr'");
+	}
+
+	@Override
+	public Object visitNewArrayExpr(NewArrayExpr expr, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitNewArrayExpr'");
+	}
+
+	@Override
+	public Object visitThisRef(ThisRef ref, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitThisRef'");
+	}
+
+	@Override
+	public Object visitIdRef(IdRef ref, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIdRef'");
+	}
+
+	@Override
+	public Object visitQRef(QualRef ref, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitQRef'");
+	}
+
+	@Override
+	public Object visitIdentifier(Identifier id, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIdentifier'");
+	}
+
+	@Override
+	public Object visitOperator(Operator op, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitOperator'");
+	}
+
+	@Override
+	public Object visitIntLiteral(IntLiteral num, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIntLiteral'");
+	}
+
+	@Override
+	public Object visitBooleanLiteral(BooleanLiteral bool, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitBooleanLiteral'");
+	}
+
+	@Override
+	public Object visitNullLiteral(NullLiteral nl, Object arg) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitNullLiteral'");
 	}
 }

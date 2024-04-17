@@ -3,6 +3,7 @@ package miniJava;
 import java.io.FileInputStream;
 
 import miniJava.AbstractSyntaxTrees.AST;
+import miniJava.AbstractSyntaxTrees.ASTDisplay;
 import miniJava.ContextualAnalysis.TypeCheck;
 import miniJava.ContextualAnalysis.Identification;
 import miniJava.ContextualAnalysis.ScopedIdentification;
@@ -48,8 +49,8 @@ public class Compiler {
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			//ASTDisplay disp = new ASTDisplay();
-			//disp.showTree(tree);
+			ASTDisplay disp = new ASTDisplay();
+			disp.showTree(tree);
 			Identification id = new Identification();
 			id.identify(tree,error);
 			if(error.hasErrors())
