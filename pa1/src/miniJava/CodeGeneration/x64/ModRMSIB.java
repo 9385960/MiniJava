@@ -239,7 +239,7 @@ public class ModRMSIB {
 		int mod, ss;
 		mod = 2;
 
-		int regByte = (mod<<6)|(4<<3)|(getIdx(rdisp));
+		int regByte = (mod<<6)|(getIdx(r))<<3|4;
 		_b.write(regByte);
 		/*if(disp >= 256)
 		{
@@ -267,6 +267,7 @@ public class ModRMSIB {
 		}
 		ss = (ss<<6)|getIdx(ridx)<<3|getIdx(rdisp);
 		_b.write(ss);
+		x64.writeInt(_b,disp);
 	}
 	
 	// [disp],r

@@ -127,7 +127,7 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitClassType(ClassType type, Context arg) {
         if(!ScopedIdentification.IsClass(type.className.spelling))
         {
-            error.reportError("Cannot find class "+ type.className.spelling);
+            error.reportError("Cannot find class "+ type.className.spelling + " at " + type.posn.toString());
         }
         return arg;
     }
@@ -162,7 +162,7 @@ public class Identification implements Visitor<Context,Context> {
                 IdRef id = (IdRef)exp.ref;
                 if(ScopedIdentification.IsClass(id.id.spelling)&&!ScopedIdentification.IsScopeVariable(id.id.spelling))
                 {
-                    error.reportError(id.id.spelling+" cannot be resolved to a variable.");
+                    error.reportError(id.id.spelling+" cannot be resolved to a variable."+ " at " + stmt.posn.toString());
                 }
             }
         }   
@@ -181,7 +181,7 @@ public class Identification implements Visitor<Context,Context> {
                 IdRef id = (IdRef)exp.ref;
                 if(ScopedIdentification.IsClass(id.id.spelling)&&!ScopedIdentification.IsScopeVariable(id.id.spelling))
                 {
-                    error.reportError(id.id.spelling+" cannot be resolved to a variable.");
+                    error.reportError(id.id.spelling+" cannot be resolved to a variable."+ " at " + stmt.posn.toString());
                 }
             }
         }   
@@ -201,7 +201,7 @@ public class Identification implements Visitor<Context,Context> {
         insideCall = true;
         if(stmt.methodRef instanceof ThisRef)
         {
-            error.reportError("Keyword this is not callable");
+            error.reportError("Keyword this is not callable at " + stmt.posn.toString());
         }
         stmt.methodRef.visit(this,arg.CopyContext());
 
@@ -224,11 +224,11 @@ public class Identification implements Visitor<Context,Context> {
         stmt.cond.visit(this,arg);
         if(stmt.thenStmt instanceof VarDeclStmt)
         {
-            error.reportError("Single variable declaration not permitted after if statement");
+            error.reportError("Single variable declaration not permitted after if statement"+ " at " + stmt.posn.toString());
         } 
         if(stmt.elseStmt instanceof VarDeclStmt)
         {
-            error.reportError("Single variable declaration not permitted after if statement");
+            error.reportError("Single variable declaration not permitted after if statement"+ " at " + stmt.posn.toString());
         }
         stmt.thenStmt.visit(this,arg);
         if(stmt.elseStmt != null)
@@ -242,7 +242,7 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitWhileStmt(WhileStmt stmt, Context arg) {
         if(stmt.body instanceof VarDeclStmt)
         {
-            error.reportError("Single variable declaration not permitted after while statement");
+            error.reportError("Single variable declaration not permitted after while statement"+ " at " + stmt.posn.toString());
         }
         stmt.cond.visit(this, arg.CopyContext());
         stmt.body.visit(this, arg.CopyContext());
@@ -311,7 +311,7 @@ public class Identification implements Visitor<Context,Context> {
     public Context visitThisRef(ThisRef ref, Context arg) {
         if(arg.GetStaticContext())
         {
-            error.reportError("This keyword cannot be used in a static context.");
+            error.reportError("This keyword cannot be used in a static context "+ " at " + ref.posn.toString());
         }
         return arg;
     }
@@ -323,7 +323,7 @@ public class Identification implements Visitor<Context,Context> {
         Boolean isStaticRef = GetStaticFromId(ref.id);
         if((isStaticRef != arg.GetStaticContext())&&!ScopedIdentification.IsScopeVariable(ref.id.spelling)&&!ScopedIdentification.IsClass(ref.id.spelling)&&!insideQref)
         {
-            error.reportError("Cannot access member "+ref.id.spelling);
+            error.reportError("Cannot access member "+ref.id.spelling+ " at " + ref.posn.toString());
         }
         //arg.SetStaticContext(GetStaticFromId(ref.id));
         return arg;
@@ -342,7 +342,7 @@ public class Identification implements Visitor<Context,Context> {
             {
                 if(!GetStaticFromId(ref.id))
                 {
-                    error.reportError("Cannot access non static member "+ref.id.spelling+" from static context.");
+                    error.reportError("Cannot access non static member "+ref.id.spelling+" from static context at "+ ref.posn.toString());
                 }
             }
         }
@@ -357,7 +357,7 @@ public class Identification implements Visitor<Context,Context> {
         {
             if(id.spelling.equals(varname))
             {
-                error.reportError("Cannot reference "+varname+" during assignment.");
+                error.reportError("Cannot reference "+varname+" during assignment"+ " at " + id.posn.toString());
             }
         }
         if(id.decl == null)
@@ -365,13 +365,13 @@ public class Identification implements Visitor<Context,Context> {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);
             if(!insideCall&&(decl instanceof MethodDecl))
             {
-                error.reportError("Must call "+id.spelling+" cannot use as variable.");
+                error.reportError("Must call "+id.spelling+" cannot use as variable"+ " at " + id.posn.toString());
             }
             if(decl != null)
             {
                 id.decl = decl;
             }else {
-                error.reportError("Identifier for "+id.spelling+" does not exist.");
+                error.reportError("Identifier for "+id.spelling+" does not exist"+ " at " + id.posn.toString());
             }
         }        
         return arg;

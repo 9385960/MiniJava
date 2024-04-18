@@ -16,6 +16,8 @@ public class Scanner {
 	private boolean _endOfToken = false;
 	private boolean _insideComment = false;
 	private Map<String,TokenType> reservedWords = new HashMap<>();
+	private int rowNum = 1;
+	private int columnNum = 1;
 	
 	public Scanner( InputStream in, ErrorReporter errors ) {
 		this._in = in;
@@ -39,7 +41,7 @@ public class Scanner {
 			{
 				_errors.reportError("No End of Comment");
 			}
-			return makeToken(TokenType.EOT);
+			return makeToken(TokenType.EOT,new SourcePosition(rowNum,columnNum));
 		}
 		while(Character.isWhitespace(_currentChar)||Character.isISOControl(_currentChar))
 		{
@@ -48,11 +50,13 @@ public class Scanner {
 
 		if(Character.isDigit(_currentChar))
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			makeNum();
-			Token toReturn = makeToken(TokenType.NUM);
+			Token toReturn = makeToken(TokenType.NUM,position);
 			return toReturn;
 		}else if(_currentChar == '/')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '/')
 			{
@@ -90,134 +94,154 @@ public class Scanner {
 				_currentText.delete(0, _currentText.length());
 				return scan();
 			}else {
-				return makeToken(TokenType.OPERATOR);
+				return makeToken(TokenType.OPERATOR,position);
 			}
 		}else if(Character.isLetter(_currentChar))
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			makeID();
-			return checkString();
+			return checkString(position);
 		}else if(_currentChar == '.')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.PERIOD);
+			return makeToken(TokenType.PERIOD,position);
 		}else if(_currentChar == '(')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.LPAREN);
+			return makeToken(TokenType.LPAREN,position);
 		}else if(_currentChar == ')')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.RPAREN);
+			return makeToken(TokenType.RPAREN,position);
 		}else if(_currentChar == '{')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.LBRACE);
+			return makeToken(TokenType.LBRACE,position);
 		}else if(_currentChar == '}')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.RBRACE);
+			return makeToken(TokenType.RBRACE,position);
 		}else if(_currentChar == '[')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.LBRACKET);
+			return makeToken(TokenType.LBRACKET,position);
 		}else if(_currentChar == ']')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.RBRACKET);
+			return makeToken(TokenType.RBRACKET,position);
 		}else if(_currentChar == ';')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.SEMICOLON);
+			return makeToken(TokenType.SEMICOLON,position);
 		}else if(_currentChar == ',')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.COMMA);
+			return makeToken(TokenType.COMMA,position);
 		}else if(_currentChar == '=')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '=')
 			{
 				takeIt();
-				return makeToken(TokenType.OPERATOR);
+				return makeToken(TokenType.OPERATOR,position);
 			}
-			return makeToken(TokenType.EQUALS);
+			return makeToken(TokenType.EQUALS,position);
 		}else if(_currentChar == '>')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '=')
 			{
 				takeIt();
 			}
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}
 		else if(_currentChar == '<')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '=')
 			{
 				takeIt();
 			}
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}
 		else if(_currentChar == '!')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '=')
 			{
 				takeIt();
 			}
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}else if(_currentChar == '&')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '&')
 			{
 				takeIt();
 			}else{
-				_errors.reportError("single & encountered 2 are required");
+				_errors.reportError("single & encountered 2 are required at "+position.toString());
 			}
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}else if(_currentChar == '|')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
 			if(_currentChar == '|')
 			{
 				takeIt();
 			}else{
-				_errors.reportError("single & encountered 2 are required");
+				_errors.reportError("single | encountered 2 are required at "+position.toString());
 			}
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}else if(_currentChar == '+')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}else if(_currentChar == '*')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}else if(_currentChar == '-')
 		{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			takeIt();
-			return makeToken(TokenType.OPERATOR);
+			return makeToken(TokenType.OPERATOR,position);
 		}
 		else{
+			SourcePosition position = new SourcePosition(rowNum,columnNum);
 			if(_endOfDocument)
 			{
 				skipIt();
-				return makeToken(TokenType.EOT);
+				return makeToken(TokenType.EOT,position);
 			}
-			_errors.reportError("Unknown letter encountered");
+			_errors.reportError("Unknown letter encountered at "+position.toString());
 		}
 		return null;
 	}
 
-	private Token checkString()
+	private Token checkString(SourcePosition position)
 	{
 		if(reservedWords.containsKey(_currentText.toString()))
 		{
-			return makeToken(reservedWords.get(_currentText.toString()));
+			return makeToken(reservedWords.get(_currentText.toString()),position);
 		}else{
-			return makeToken(TokenType.ID);
+			return makeToken(TokenType.ID,position);
 		}
 	}
 
@@ -238,11 +262,25 @@ public class Scanner {
 	}
 	
 	private void takeIt() {
+		if(_currentChar == '\n')
+		{
+			rowNum += 1;
+			columnNum = 1;
+		}else{
+			columnNum += 1;
+		}
 		_currentText.append(_currentChar);
 		nextChar();
 	}
 	
 	private void skipIt() {
+		if(_currentChar == '\n')
+		{
+			rowNum += 1;
+			columnNum = 1;
+		}else{
+			columnNum += 1;
+		}
 		nextChar();
 	}
 	
@@ -268,8 +306,8 @@ public class Scanner {
 		}
 	}
 	
-	private Token makeToken( TokenType toktype ) {
-		Token toReturn = new Token(toktype,_currentText.toString(), new SourcePosition());
+	private Token makeToken( TokenType toktype , SourcePosition position) {
+		Token toReturn = new Token(toktype,_currentText.toString(), position);
 		_currentText.delete(0, _currentText.length());
 		return toReturn;
 	}

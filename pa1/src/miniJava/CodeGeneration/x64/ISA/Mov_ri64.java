@@ -9,9 +9,13 @@ public class Mov_ri64 extends Instruction {
 	public Mov_ri64(Reg64 reg, long imm64) {
 		rexW = true; // operand is 64bit
 		// TODO: first, check if the Reg64 is R8-R15, if it is, set one of rexB,rexW,rexR,rexX to true (which one?)
+		if(reg.getIdx() > 7)
+		{
+			rexB = true;
+		}
 		// TODO: second, find the opcode for pop r, where r is a plain 64-bit register
 		// NOTE: x64.getIdx(r) will return a 0-7 index, whereas r.getIdx() returns an index from 0-15
-		opcodeBytes.write( 0x00 );
+		opcodeBytes.write( 0xB8 +x64.getIdx(reg));
 		x64.writeLong(immBytes,imm64);
 	}
 }

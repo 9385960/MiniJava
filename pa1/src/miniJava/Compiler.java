@@ -9,6 +9,8 @@ import miniJava.ContextualAnalysis.Identification;
 import miniJava.ContextualAnalysis.ScopedIdentification;
 import miniJava.SyntacticAnalyzer.Parser;
 import miniJava.SyntacticAnalyzer.Scanner;
+import miniJava.CodeGeneration.x64.*;
+import miniJava.CodeGeneration.x64.ISA.*;
 
 public class Compiler {
 	// Main function, the file to compile will be an argument.
@@ -69,6 +71,16 @@ public class Compiler {
 				}
 			}
 			
-		}		
+		}
+		//ModRMSIB m = new ModRMSIB(Reg64.RAX,Reg64.RBX,2,2147483647,Reg64.RCX);
+		//Instruction a = new Push(200);
+		//renderBytes(a.getBytes());
+	}
+
+	private static void renderBytes(byte[] bArray)
+	{
+		for( int i = 0; i < bArray.length; ++i )
+			System.out.printf("%02X ", bArray[i]);
+		System.out.println("");
 	}
 }

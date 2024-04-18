@@ -428,10 +428,10 @@ public class Parser {
 
 	private Expression parseA()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression t1 = parseB();
 		while(_currentToken.getTokenText().equals("||"))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression t2 = parseB();
@@ -442,10 +442,10 @@ public class Parser {
 
 	private Expression parseB()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression t1 = parseC();
 		while(_currentToken.getTokenText().equals("&&"))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression t2 = parseC();
@@ -456,10 +456,10 @@ public class Parser {
 
 	private Expression parseC()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression t1 = parseD();
 		while(_currentToken.getTokenText().equals("==")||_currentToken.getTokenText().equals("!="))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression t2 = parseD();
@@ -470,10 +470,10 @@ public class Parser {
 
 	private Expression parseD()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression t1 = parseE();
 		while(_currentToken.getTokenText().equals("<=")||_currentToken.getTokenText().equals(">=")||_currentToken.getTokenText().equals(">")||_currentToken.getTokenText().equals("<"))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression t2 = parseE();
@@ -484,10 +484,10 @@ public class Parser {
 
 	private Expression parseE()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression t1 = parseT();
 		while(_currentToken.getTokenText().equals("+")||_currentToken.getTokenText().equals("-"))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression t2 = parseT();
@@ -498,10 +498,10 @@ public class Parser {
 
 	private Expression parseT()
 	{
+		SourcePosition position = _currentToken.getTokenPosition();
 		Expression f1 = parseF();
 		while(_currentToken.getTokenText().equals("*")||_currentToken.getTokenText().equals("/"))
 		{
-			SourcePosition position = new SourcePosition();
 			Operator op = new Operator(_currentToken);
 			accept(TokenType.OPERATOR);
 			Expression f2 = parseF();
@@ -622,7 +622,7 @@ public class Parser {
 		
 		//  "Expected token X, but got Y"
 
-		_errors.reportError("Expected " + expectedType.name() + ", but got " + _currentToken.getTokenType().name() + " Instead" );
+		_errors.reportError("Expected " + expectedType.name() + ", but got " + _currentToken.getTokenType().name() + " Instead at "+_currentToken.getTokenPosition().toString() );
 		throw new SyntaxError();
 	}
 

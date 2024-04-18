@@ -145,8 +145,9 @@ public class TypeCheck implements Visitor<String,String> {
         String t2 = stmt.initExp.visit(this, null);
         if(!t1.equals(t2)&&!t2.equals("null")&&!t2.equals("ERROR"))
         {
-            error.reportError("Cannot assign type "+t2+" to type "+t1);
+            error.reportError("Cannot assign type "+t2+" to type "+t1+ " at " + stmt.posn.toString());
         }
+
         return "";
     }
 
@@ -156,7 +157,7 @@ public class TypeCheck implements Visitor<String,String> {
         String t2 = stmt.val.visit(this, null);
         if(!t1.equals(t2)&&!t2.equals("null")&&!t2.equals("ERROR"))
         {
-            error.reportError("Cannot assign type " + t2 + " to type "+t1);
+            error.reportError("Cannot assign type " + t2 + " to type "+t1+ " at " + stmt.posn.toString());
         }
 
         return "";
@@ -170,7 +171,7 @@ public class TypeCheck implements Visitor<String,String> {
             IdRef ref = (IdRef)stmt.ref;
             if(!IsArrayFromDecl(ref.id.decl))
             {
-                error.reportError("Cannot index into non array type "+t1);
+                error.reportError("Cannot index into non array type "+t1+ " at " + stmt.posn.toString());
                 return(TypeKind.ERROR.toString());
             }else{
                 t1 = t1.substring(5);
@@ -183,11 +184,11 @@ public class TypeCheck implements Visitor<String,String> {
         String t3 = stmt.exp.visit(this, null);
         if(!t2.equals("INT"))
         {
-            error.reportError("Cannot index into an array with type "+t2);
+            error.reportError("Cannot index into an array with type "+t2+ " at " + stmt.posn.toString());
         }
         if(!t1.equals(t3)&&!t3.equals("null")&&!t2.equals("ERROR"))
         {
-            error.reportError("Cannot assign type " + t3 + " to type "+t1);
+            error.reportError("Cannot assign type " + t3 + " to type "+t1+ " at " + stmt.posn.toString());
         }
         return t1;
     }
@@ -199,13 +200,13 @@ public class TypeCheck implements Visitor<String,String> {
         String toReturn = "";
         if(stmt.methodRef instanceof ThisRef)
         {
-            error.reportError("This keyword is not callable");
+            error.reportError("This keyword is not callable"+ " at " + stmt.posn.toString());
         }else if(stmt.methodRef instanceof IdRef)
         {
             MemberDecl dec = ScopedIdentification.GetMemberDecl(currentClass,((IdRef)stmt.methodRef).id.spelling);
             if(dec instanceof FieldDecl)
             {
-                error.reportError("field member is not callable");
+                error.reportError("field member is not callable"+ " at " + stmt.posn.toString());
             }else if(dec instanceof MethodDecl)
             {
                 int i = 0;
@@ -223,7 +224,7 @@ public class TypeCheck implements Visitor<String,String> {
             MemberDecl dec = ScopedIdentification.GetMemberDecl(contextClass,qRef.id.spelling);
             if(dec instanceof FieldDecl)
             {
-                error.reportError("field member is not callable");
+                error.reportError("field member is not callable"+ " at " + stmt.posn.toString());
             }else if(dec instanceof MethodDecl)
             {
                 int i = 0;
@@ -241,7 +242,7 @@ public class TypeCheck implements Visitor<String,String> {
             String expressionType = exp.visit(this, null);
             if(!expressionType.equals(typeStrings[i])&&!expressionType.equals("null"))
             {
-                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead.");
+                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead"+ " at " + stmt.posn.toString());
             }
             i++;
         }
@@ -253,7 +254,7 @@ public class TypeCheck implements Visitor<String,String> {
         // TODO Auto-generated method stub
         if(insideVoid&&stmt!=null)
         {
-            error.reportError("Cannot return something from a void method.");
+            error.reportError("Cannot return something from a void method"+ " at " + stmt.posn.toString());
         }
         return stmt.returnExpr.visit(this, null);
     }
@@ -264,7 +265,7 @@ public class TypeCheck implements Visitor<String,String> {
         String t1 = stmt.cond.visit(this, null);
         if(!t1.equals(TokenType.BOOLEAN.toString()))
         {
-            error.reportError("Expression inside if statement must be a boolean");
+            error.reportError("Expression inside if statement must be a boolean"+ " at " + stmt.posn.toString());
         }
         return "";
     }
@@ -275,7 +276,7 @@ public class TypeCheck implements Visitor<String,String> {
         String t1 = stmt.cond.visit(this, null);
         if(!t1.equals(TokenType.BOOLEAN.toString()))
         {
-            error.reportError("Expression inside while statement must be a boolean");
+            error.reportError("Expression inside while statement must be a boolean"+ " at " + stmt.posn.toString());
         }
         return "";
     }
@@ -307,7 +308,7 @@ public class TypeCheck implements Visitor<String,String> {
             IdRef ref = (IdRef)expr.ref;
             if(!IsArrayFromDecl(ref.id.decl))
             {
-                error.reportError("Cannot index into non array type "+t2);
+                error.reportError("Cannot index into non array type "+t2+ " at " + expr.posn.toString());
                 return(TypeKind.ERROR.toString());
             }else{
                 t2 = t2.substring(5);
@@ -319,7 +320,7 @@ public class TypeCheck implements Visitor<String,String> {
         
         if(!t1.equals("INT"))
         {
-            error.reportError("Cannot index into array with non-integer");
+            error.reportError("Cannot index into array with non-integer"+ " at " + expr.posn.toString());
         }
         return t2;
     }
@@ -330,13 +331,13 @@ public class TypeCheck implements Visitor<String,String> {
         String toReturn = "";
         if(expr.functionRef instanceof ThisRef)
         {
-            error.reportError("This keyword is not callable");
+            error.reportError("This keyword is not callable"+ " at " + expr.posn.toString());
         }else if(expr.functionRef instanceof IdRef)
         {
             MemberDecl dec = ScopedIdentification.GetMemberDecl(currentClass,((IdRef)expr.functionRef).id.spelling);
             if(dec instanceof FieldDecl)
             {
-                error.reportError("field member is not callable");
+                error.reportError("field member is not callable"+ " at " + expr.posn.toString());
             }else if(dec instanceof MethodDecl)
             {
                 int i = 0;
@@ -354,7 +355,7 @@ public class TypeCheck implements Visitor<String,String> {
             MemberDecl dec = ScopedIdentification.GetMemberDecl(contextClass,qRef.id.spelling);
             if(dec instanceof FieldDecl)
             {
-                error.reportError("field member is not callable");
+                error.reportError("field member is not callable"+ " at " + expr.posn.toString());
             }else if(dec instanceof MethodDecl)
             {
                 int i = 0;
@@ -372,7 +373,7 @@ public class TypeCheck implements Visitor<String,String> {
             String expressionType = exp.visit(this, null);
             if(!expressionType.equals(typeStrings[i])&&!expressionType.equals("null"))
             {
-                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead.");
+                error.reportError("Expected type "+typeStrings[i]+" but got type "+expressionType+" instead"+ " at " + expr.posn.toString());
             }
             i++;
         }
@@ -418,7 +419,7 @@ public class TypeCheck implements Visitor<String,String> {
         Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
         if(decl instanceof MethodDecl)
         {
-            error.reportError("Cannot have method in qualified reference.");
+            error.reportError("Cannot have method in qualified reference"+ " at " + ref.posn.toString());
         }
         return GetTypeFromDeclaration(decl);
     }
