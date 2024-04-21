@@ -252,7 +252,7 @@ public class Identification implements Visitor<Context,Context> {
     @Override
     public Context visitUnaryExpr(UnaryExpr expr, Context arg) {
         expr.operator.visit(this, arg);
-        expr.operator.visit(this, arg);
+        expr.expr.visit(this, arg);
         return arg;
     }
 

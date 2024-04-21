@@ -4,12 +4,11 @@
  */
 class Pass311 {
 
-    static ArrayTest y;
-    static Test[] x;
-    static int z;
-   public static void main (String [] args) {
-        y = new Test[5];
-   }
+
+    public static void main (String [] args) {
+        int x = -5;
+    }
+
 }
 
 class Test{

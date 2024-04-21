@@ -339,7 +339,7 @@ public class ELFMaker {
 		e.data = null;
 		
 		e.sh_name = 0;
-		e.sh_type = 0x00; // TODO: what type is the null section?
+		e.sh_type = SHT_NULL; // TODO: what type is the null section?
 		e.sh_flags = 0;
 		e.sh_addr = 0;
 		e.sh_offset = 0;

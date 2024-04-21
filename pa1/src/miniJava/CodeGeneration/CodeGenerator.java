@@ -9,12 +9,13 @@ import miniJava.CodeGeneration.x64.ISA.*;
 public class CodeGenerator implements Visitor<Object, Object> {
 	private ErrorReporter _errors;
 	private InstructionList _asm; // our list of instructions that are used to make the code section
-	
+	private int currentOffset = -8;
 	public CodeGenerator(ErrorReporter errors) {
 		this._errors = errors;
 	}
+
 	
-	public void parse(Package prog) {
+	public void parse(AST prog) {
 		_asm = new InstructionList();
 		
 		// If you haven't refactored the name "ModRMSIB" to something like "R",
@@ -59,17 +60,22 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		// patch method 2: let the jmp calculate the offset
 		//  Note the false means that it is a 32-bit immediate for jumping (an int)
 		//     _asm.patch( someJump.listIdx, new Jmp(asm.size(), someJump.startAddress, false) );
-		
+		_asm.markOutputStart();
 		prog.visit(this,null);
-		
-		// Output the file "a.out" if no errors
-		if( !_errors.hasErrors() )
-			makeElf("a.out");
+		System.out.println("Outputting Byte Code");
+		_asm.outputFromMark();
+		//TODO Output the file "a.out" if no errors
+		//if( !_errors.hasErrors() )
+			//makeElf("a.out");
 	}
 
 	@Override
 	public Object visitPackage(Package prog, Object arg) {
 		// TODO: visit relevant parts of our AST
+		for(ClassDecl dec : prog.classDeclList)
+        {
+            dec.visit(this, arg);
+        }
 		return null;
 	}
 	
@@ -97,73 +103,106 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	private int makePrintln() {
 		// TODO: how can we generate the assembly to println?
 		int idxStart = _asm.add(new Mov_rmi(new ModRMSIB(Reg64.RAX,true),0x01));
-		return -1;
+		_asm.add(new Syscall());
+		return idxStart;
 	}
 
 	@Override
 	public Object visitClassDecl(ClassDecl cd, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitClassDecl'");
+		for(FieldDecl f: cd.fieldDeclList)
+        {
+            f.visit(this, arg);
+        }
+        for(MethodDecl m: cd.methodDeclList)
+        {
+            m.visit(this,arg);
+        }
+		return null;
 	}
 
 	@Override
 	public Object visitFieldDecl(FieldDecl fd, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitFieldDecl'");
+		fd.type.visit(this, null);
+		return null;
 	}
 
 	@Override
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitMethodDecl'");
+		offset = -8;
+		for(ParameterDecl pd: md.parameterDeclList)
+        {
+            pd.visit(this, null);
+        }
+        for (Statement s: md.statementList) {
+            s.visit(this, null);
+        }
+        return null;
 	}
 
 	@Override
 	public Object visitParameterDecl(ParameterDecl pd, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitParameterDecl'");
+		pd.type.visit(this,arg);
+		return null;
 	}
 
 	@Override
 	public Object visitVarDecl(VarDecl decl, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitVarDecl'");
+		decl.type.visit(this,arg);
+		_asm.add(new Push(0));
+		decl.entity = new RuntimeEntity(Reg64.RBP,offset);
+		offset -= 8;
+		return null;
 	}
 
 	@Override
 	public Object visitBaseType(BaseType type, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitBaseType'");
+		return null;
 	}
 
 	@Override
 	public Object visitClassType(ClassType type, Object arg) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitClassType'");
+		return null;
 	}
 
 	@Override
 	public Object visitArrayType(ArrayType type, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitArrayType'");
+		type.eltType.visit(this,arg);
+		return null;
 	}
 
 	@Override
 	public Object visitBlockStmt(BlockStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitBlockStmt'");
+		for (Statement s: stmt.sl) {
+        	s.visit(this, null);
+        }
+        return null;
 	}
 
 	@Override
 	public Object visitVardeclStmt(VarDeclStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitVardeclStmt'");
+		stmt.varDecl.visit(this,(Object)true);
+        stmt.initExp.visit(this, null);
+
+        _asm.add(new Pop(Reg64.RAX));
+        _asm.add(new Pop(Reg64.RDI));
+        _asm.add(new Mov_rmr());
+        return null;
 	}
 
 	@Override
 	public Object visitAssignStmt(AssignStmt stmt, Object arg) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitAssignStmt'");
+		stmt.ref.visit(this, null);
+        stmt.val.visit(this, null);
+        return null;
 	}
 
 	@Override
@@ -198,20 +237,77 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
 	@Override
 	public Object visitUnaryExpr(UnaryExpr expr, Object arg) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitUnaryExpr'");
+		Operator op = expr.operator;
+		expr.expr.visit(this,null);
+		//Get value into register
+		_asm.add(new Pop(Reg64.RAX));
+		if(op.spelling.equals("-"))
+		{
+			_asm.add(new Xor(new ModRMSIB(Reg64.RCX,Reg64.RCX)));
+			_asm.add(new Sub(new ModRMSIB(Reg64.RCX,Reg64.RAX)));
+			_asm.add(new Push(Reg64.RCX));
+		}else if(op.spelling.equals("!"))
+		{
+			_asm.add(new Not(new ModRMSIB(Reg64.RAX,true)));
+			_asm.add(new Push(Reg64.RAX));
+		}
+		return null;
 	}
 
 	@Override
 	public Object visitBinaryExpr(BinaryExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitBinaryExpr'");
+		Operator op = expr.operator;
+		expr.left.visit(this,null);
+		expr.right.visit(this,null);
+		_asm.add(new Pop(Reg64.RCX));
+		_asm.add(new Pop(Reg64.RAX));
+		if(op.spelling.equals("&&"))
+		{
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("||"))
+		{
+			_asm.add(new Or(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals(">"))
+		{
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals(">="))
+		{
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("<"))
+		{
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("<="))
+		{
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("+"))
+		{
+			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("-"))
+		{
+			_asm.add(new Sub(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("*"))
+		{
+			_asm.add(new Imul(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("/"))
+		{
+			_asm.add(new Idiv(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("=="))
+		{
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}else if(op.spelling.equals("!="))
+		{
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+		}
+		_asm.add(new Push(Reg64.RAX));
+		return null;
 	}
 
 	@Override
 	public Object visitRefExpr(RefExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitRefExpr'");
+		expr.ref.visit(this,null);
+		return null;
 	}
 
 	@Override
@@ -229,19 +325,24 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitLiteralExpr(LiteralExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitLiteralExpr'");
+		expr.lit.visit(this,null);
+		return null;
 	}
 
 	@Override
 	public Object visitNewObjectExpr(NewObjectExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitNewObjectExpr'");
+		makeMalloc();
+		_asm.add(new Push(new ModRMSIB(Reg64.RAX,true)));
+		return null;
 	}
 
 	@Override
 	public Object visitNewArrayExpr(NewArrayExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitNewArrayExpr'");
+		makeMalloc();
+		_asm.add(new Push(new ModRMSIB(Reg64.RAX,true)));
+		return null;
 	}
 
 	@Override
@@ -277,7 +378,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIntLiteral(IntLiteral num, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIntLiteral'");
+		_asm.add(new Push(Integer.parseInt(num.spelling)));
+		return null;
 	}
 
 	@Override

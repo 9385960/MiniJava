@@ -1,0 +1,3 @@
+Added a Declaration field to identifier
+
+Added a RuntimeEntity to Declaration

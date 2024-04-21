@@ -11,6 +11,7 @@ import miniJava.SyntacticAnalyzer.Parser;
 import miniJava.SyntacticAnalyzer.Scanner;
 import miniJava.CodeGeneration.x64.*;
 import miniJava.CodeGeneration.x64.ISA.*;
+import miniJava.CodeGeneration.*;
 
 public class Compiler {
 	// Main function, the file to compile will be an argument.
@@ -67,6 +68,8 @@ public class Compiler {
 					System.out.println("Error");
 					error.outputErrors();
 				}else{
+					CodeGenerator gen = new CodeGenerator(error);
+					gen.parse(tree);
 					System.out.println("Success");			
 				}
 			}
