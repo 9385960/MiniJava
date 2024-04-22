@@ -7,9 +7,15 @@ import miniJava.CodeGeneration.x64.*;
 import miniJava.CodeGeneration.x64.ISA.*;
 
 public class CodeGenerator implements Visitor<Object, Object> {
+
+
 	private ErrorReporter _errors;
 	private InstructionList _asm; // our list of instructions that are used to make the code section
 	private int currentOffset = -8;
+	private boolean mainFound = false;
+	private String currentClass = "";
+	private CallPatcher patchCall = new CallPatcher();
+
 	public CodeGenerator(ErrorReporter errors) {
 		this._errors = errors;
 	}
@@ -109,6 +115,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
 	@Override
 	public Object visitClassDecl(ClassDecl cd, Object arg) {
+		currentClass = cd.name;
 		// TODO Auto-generated method stub
 		for(FieldDecl f: cd.fieldDeclList)
         {
@@ -131,7 +138,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
-		offset = -8;
+		if(md.name.equals("main"))
+		{
+			System.out.println("Main Found");
+		}else{
+			_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
+			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
+		}
 		for(ParameterDecl pd: md.parameterDeclList)
         {
             pd.visit(this, null);
@@ -154,8 +167,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		// TODO Auto-generated method stub
 		decl.type.visit(this,arg);
 		_asm.add(new Push(0));
-		decl.entity = new RuntimeEntity(Reg64.RBP,offset);
-		offset -= 8;
+		decl.entity = new RuntimeEntity(currentOffset,Reg64.RBP);
+		currentOffset -= 8;
 		return null;
 	}
 
@@ -194,7 +207,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
         _asm.add(new Pop(Reg64.RAX));
         _asm.add(new Pop(Reg64.RDI));
-        _asm.add(new Mov_rmr());
+        _asm.add(new Mov_rmr(new ModRMSIB(Reg64.RAX,Reg64.RDI)));
         return null;
 	}
 
@@ -214,7 +227,14 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitCallStmt(CallStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitCallStmt'");
+		if(stmt.methodRef instanceof IdRef)
+		{
+			int currentLocation = _asm.add(new Call(0));
+			PatchLocation location = new PatchLocation(currentClass, ((IdRef)stmt.methodRef).id.spelling,_asm.getCurrentIndex()-1 ,currentLocation);
+			patchCall.AddToPatch(location);
+		}
+		//throw new UnsupportedOperationException("Unimplemented method 'visitCallStmt'");
+		return null;
 	}
 
 	@Override
@@ -264,40 +284,40 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		_asm.add(new Pop(Reg64.RAX));
 		if(op.spelling.equals("&&"))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("||"))
 		{
-			_asm.add(new Or(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Or(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals(">"))
 		{
-			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals(">="))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("<"))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("<="))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("+"))
 		{
-			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("-"))
 		{
-			_asm.add(new Sub(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Sub(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("*"))
 		{
-			_asm.add(new Imul(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Imul(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("/"))
 		{
-			_asm.add(new Idiv(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Idiv(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("=="))
 		{
-			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}else if(op.spelling.equals("!="))
 		{
-			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)))
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RAX)));
 		}
 		_asm.add(new Push(Reg64.RAX));
 		return null;
@@ -372,7 +392,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitOperator(Operator op, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitOperator'");
+		return null;
 	}
 
 	@Override
@@ -385,12 +405,19 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitBooleanLiteral(BooleanLiteral bool, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitBooleanLiteral'");
+		if(bool.spelling.equals("true"))
+		{
+			_asm.add(new Push(1));
+		}else{
+			_asm.add(new Push(0));
+		}
+		return null;
 	}
 
 	@Override
 	public Object visitNullLiteral(NullLiteral nl, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitNullLiteral'");
+		_asm.add(new Push(0));
+		return null;
 	}
 }

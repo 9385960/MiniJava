@@ -1,3 +1,5 @@
+package miniJava.AbstractSyntaxTrees;
+
 import miniJava.CodeGeneration.x64.*;
 
 public class RuntimeEntity{

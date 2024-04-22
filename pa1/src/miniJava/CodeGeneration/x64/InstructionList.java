@@ -22,6 +22,11 @@ public class InstructionList {
 		_currentSize += ins.size();
 		return ins.listIdx;
 	}
+
+	public int getCurrentIndex()
+	{
+		return _currentIdx;
+	}
 	
 	public Instruction get(int idx) {
 		return _instructions.get(idx);

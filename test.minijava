@@ -1,20 +1,10 @@
 /**
  * COMP 520
- * Array update
+ * simple int value and printing 
  */
-class Pass311 {
-
-
-    public static void main (String [] args) {
-        int x = -5;
-    }
-
+class MainClass {
+   public static void main (String [] args) {
+      int tstvar = 49;
+   }
 }
 
-class Test{
-    
-}
-
-class ArrayTest {
-    
-}
