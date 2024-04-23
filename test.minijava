@@ -4,7 +4,10 @@
  */
 class MainClass {
    public static void main (String [] args) {
-      int tstvar = 49;
+     // int tstvar = 49;
+      //int help = tstvar;
+      //tstvar = 2;
+      System.out.println(2);
    }
 }
 

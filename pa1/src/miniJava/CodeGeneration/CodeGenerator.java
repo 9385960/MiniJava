@@ -5,6 +5,7 @@ import miniJava.AbstractSyntaxTrees.*;
 import miniJava.AbstractSyntaxTrees.Package;
 import miniJava.CodeGeneration.x64.*;
 import miniJava.CodeGeneration.x64.ISA.*;
+import miniJava.ContextualAnalysis.ScopedIdentification;
 
 public class CodeGenerator implements Visitor<Object, Object> {
 
@@ -15,6 +16,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	private boolean mainFound = false;
 	private String currentClass = "";
 	private CallPatcher patchCall = new CallPatcher();
+	private long entryPoint;
 
 	public CodeGenerator(ErrorReporter errors) {
 		this._errors = errors;
@@ -22,7 +24,19 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
 	
 	public void parse(AST prog) {
+		
+
 		_asm = new InstructionList();
+
+		_asm.markOutputStart();
+
+		int startindex = _asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
+		patchCall.AddMethod("_PrintStream","println",startindex);
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
+		makePrintln();
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RSP,Reg64.RBP)));
+        _asm.add(new Pop(new ModRMSIB(Reg64.RBP,true)));
+        _asm.add(new Ret());
 		
 		// If you haven't refactored the name "ModRMSIB" to something like "R",
 		//  go ahead and do that now. You'll be needing that object a lot.
@@ -66,13 +80,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		// patch method 2: let the jmp calculate the offset
 		//  Note the false means that it is a 32-bit immediate for jumping (an int)
 		//     _asm.patch( someJump.listIdx, new Jmp(asm.size(), someJump.startAddress, false) );
-		_asm.markOutputStart();
+		
 		prog.visit(this,null);
 		System.out.println("Outputting Byte Code");
 		_asm.outputFromMark();
 		//TODO Output the file "a.out" if no errors
-		//if( !_errors.hasErrors() )
-			//makeElf("a.out");
+		if( !_errors.hasErrors() )
+			makeElf("a.out");
 	}
 
 	@Override
@@ -82,12 +96,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
         {
             dec.visit(this, arg);
         }
+        patchCall.patchCalls(_asm);
 		return null;
 	}
 	
 	public void makeElf(String fname) {
 		ELFMaker elf = new ELFMaker(_errors, _asm.getSize(), 8); // bss ignored until PA5, set to 8
-		elf.outputELF(fname, _asm.getBytes(), 0x00); // TODO: set the location of the main method
+		elf.outputELF(fname, _asm.getBytes(), entryPoint); // TODO: set the location of the main method
 	}
 	
 	private int makeMalloc() {
@@ -109,6 +124,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	private int makePrintln() {
 		// TODO: how can we generate the assembly to println?
 		int idxStart = _asm.add(new Mov_rmi(new ModRMSIB(Reg64.RAX,true),0x01));
+
 		_asm.add(new Syscall());
 		return idxStart;
 	}
@@ -141,8 +157,12 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		if(md.name.equals("main"))
 		{
 			System.out.println("Main Found");
+			mainFound = true;
+			entryPoint = _asm.getSize();
+
 		}else{
-			_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
+			int startindex = _asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
+			patchCall.AddMethod(currentClass,md.name,startindex);
 			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 		}
 		for(ParameterDecl pd: md.parameterDeclList)
@@ -152,6 +172,10 @@ public class CodeGenerator implements Visitor<Object, Object> {
         for (Statement s: md.statementList) {
             s.visit(this, null);
         }
+
+        _asm.add(new Mov_rmr(new ModRMSIB(Reg64.RSP,Reg64.RBP)));
+        _asm.add(new Pop(new ModRMSIB(Reg64.RBP,true)));
+        _asm.add(new Ret());
         return null;
 	}
 
@@ -231,6 +255,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		{
 			int currentLocation = _asm.add(new Call(0));
 			PatchLocation location = new PatchLocation(currentClass, ((IdRef)stmt.methodRef).id.spelling,_asm.getCurrentIndex()-1 ,currentLocation);
+			patchCall.AddToPatch(location);
+		}else if(stmt.methodRef instanceof QualRef)
+		{
+			QualRef qRef = (QualRef)stmt.methodRef;
+			String contextClass = (String)qRef.ref.visit(this, null);
+			int currentLocation = _asm.add(new Call(0));
+			PatchLocation location = new PatchLocation(contextClass, qRef.id.spelling,_asm.getCurrentIndex()-1 ,currentLocation);
 			patchCall.AddToPatch(location);
 		}
 		//throw new UnsupportedOperationException("Unimplemented method 'visitCallStmt'");
@@ -374,13 +405,21 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIdRef'");
+		//if((boolean)arg)//Want the effective address
+		//{
+		//	_asm.add(new Lea(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
+		//}
+		return GetTypeFromId(ref.id);
 	}
 
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitQRef'");
+		String t = (String)ref.ref.visit(this, null);
+
+        String idname = ref.id.spelling;
+        Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
+        return GetTypeFromDeclaration(decl);
 	}
 
 	@Override
@@ -420,4 +459,63 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		_asm.add(new Push(0));
 		return null;
 	}
+
+	private String GetTypeFromDeclaration(Declaration decl)
+    {
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl.type instanceof BaseType)
+        {
+            return ((BaseType)decl.type).typeKind.toString();
+        }else if(decl.type instanceof ClassType)
+        {
+            return ((ClassType)decl.type).className.spelling;
+        }else if(decl.type instanceof ArrayType)
+        {
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            String prefix = "Array";
+            return(prefix+cName);          
+        }else{
+           return(decl.name);
+        }
+    }
+
+    private String GetTypeFromId(Identifier id)
+    {
+        Declaration decl = id.decl;
+        if(decl == null)
+        {
+            return null;
+        }
+        if(decl.type instanceof BaseType)
+        {
+            return ((BaseType)decl.type).typeKind.toString();
+        }else if(decl.type instanceof ClassType)
+        {
+            return ((ClassType)decl.type).className.spelling;
+        }else if(decl.type instanceof ArrayType)
+        {
+            TypeDenoter type = ((ArrayType)decl.type).eltType;
+            String cName = "";
+            if(type instanceof BaseType)
+            {
+                cName = type.typeKind.toString();
+            }else if(type instanceof ClassType){
+                cName = ((ClassType)type).className.spelling;
+            }
+            String prefix = "Array";
+            return(prefix+cName);          
+        }else{
+           return(decl.name);
+        }
+    }
 }
