@@ -1,15 +1,15 @@
 package miniJava.CodeGeneration;
 
+import miniJava.AbstractSyntaxTrees.MethodDecl;
+
 public class PatchLocation {
-    public String contextClass;
-    public String methodName;
+    public MethodDecl method;
     public int index;
     public int callAddress;
 
-    public PatchLocation(String c, String m, int i,int a)
+    public PatchLocation(MethodDecl m, int i,int a)
     {
-        contextClass = c;
-        methodName = m;
+        method = m;
         index = i;
         callAddress=a;
     }

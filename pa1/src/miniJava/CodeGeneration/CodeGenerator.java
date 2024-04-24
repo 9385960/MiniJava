@@ -37,7 +37,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 		makePrintln();
 		*/
-		patchCall.AddMethod("_PrintStream","println",_asm.getSize());
+		patchCall.AddMethod((MethodDecl)ScopedIdentification.GetMemberDecl("_PrintStream","println"),_asm.getSize());
 		_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 		makePrintln();
@@ -186,7 +186,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 
 		}else{
-			patchCall.AddMethod(currentClass,md.name,_asm.getSize());
+			patchCall.AddMethod(md,_asm.getSize());
 			_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
 			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 		}
@@ -290,15 +290,15 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		}
 		if(stmt.methodRef instanceof IdRef)
 		{
-			PatchLocation location = new PatchLocation(currentClass, ((IdRef)stmt.methodRef).id.spelling,_asm.getCurrentIndex() ,_asm.getSize());
+			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)stmt.methodRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
 			
 			patchCall.AddToPatch(location);
 		}else if(stmt.methodRef instanceof QualRef)
 		{
 			QualRef qRef = (QualRef)stmt.methodRef;
-			String contextClass = (String)qRef.ref.visit(this, null);
-			PatchLocation location = new PatchLocation(contextClass, qRef.id.spelling,_asm.getCurrentIndex(),_asm.getSize());
+			//String contextClass = (String)qRef.ref.visit(this, null);
+			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
 			patchCall.AddToPatch(location);
 		}
@@ -448,7 +448,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		//	_asm.add(new Lea(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
 		//}
 		//ref.id.visit(this,null);
-		return GetTypeFromId(ref.id);
+		return null;
 	}
 
 	@Override
@@ -458,7 +458,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
         String idname = ref.id.spelling;
         Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
-        return GetTypeFromDeclaration(decl);
+        return null;
 	}
 
 	@Override
@@ -502,63 +502,4 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		_asm.add(new Push(0));
 		return null;
 	}
-
-	private String GetTypeFromDeclaration(Declaration decl)
-    {
-        if(decl == null)
-        {
-            return null;
-        }
-        if(decl.type instanceof BaseType)
-        {
-            return ((BaseType)decl.type).typeKind.toString();
-        }else if(decl.type instanceof ClassType)
-        {
-            return ((ClassType)decl.type).className.spelling;
-        }else if(decl.type instanceof ArrayType)
-        {
-            TypeDenoter type = ((ArrayType)decl.type).eltType;
-            String cName = "";
-            if(type instanceof BaseType)
-            {
-                cName = type.typeKind.toString();
-            }else if(type instanceof ClassType){
-                cName = ((ClassType)type).className.spelling;
-            }
-            String prefix = "Array";
-            return(prefix+cName);          
-        }else{
-           return(decl.name);
-        }
-    }
-
-    private String GetTypeFromId(Identifier id)
-    {
-        Declaration decl = id.decl;
-        if(decl == null)
-        {
-            return null;
-        }
-        if(decl.type instanceof BaseType)
-        {
-            return ((BaseType)decl.type).typeKind.toString();
-        }else if(decl.type instanceof ClassType)
-        {
-            return ((ClassType)decl.type).className.spelling;
-        }else if(decl.type instanceof ArrayType)
-        {
-            TypeDenoter type = ((ArrayType)decl.type).eltType;
-            String cName = "";
-            if(type instanceof BaseType)
-            {
-                cName = type.typeKind.toString();
-            }else if(type instanceof ClassType){
-                cName = ((ClassType)type).className.spelling;
-            }
-            String prefix = "Array";
-            return(prefix+cName);          
-        }else{
-           return(decl.name);
-        }
-    }
 }
