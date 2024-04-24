@@ -236,7 +236,10 @@ public class TypeCheck implements Visitor<String,String> {
             }
             toReturn = GetTypeFromDeclaration(dec);
         }
-
+        if(typeStrings.length != stmt.argList.size())
+        {
+            error.reportError("Expected "+stmt.argList.size()+" arguments but got "+typeStrings.length+" instead"+ " at " + stmt.posn.toString());
+        }
         int i = 0;
         for (Expression exp : stmt.argList) {
             String expressionType = exp.visit(this, null);
@@ -367,7 +370,10 @@ public class TypeCheck implements Visitor<String,String> {
                 toReturn = GetTypeFromDeclaration(dec);
             }
         }
-
+        if(typeStrings.length != expr.argList.size())
+        {
+            error.reportError("Expected "+expr.argList.size()+" arguments but got "+typeStrings.length+" instead"+ " at " + expr.posn.toString());
+        }
         int i = 0;
         for (Expression exp : expr.argList) {
             String expressionType = exp.visit(this, null);

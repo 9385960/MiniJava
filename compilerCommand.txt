@@ -1,3 +1,5 @@
 javac -d Classes pa1/src/miniJava/*.java pa1/src/miniJava/AbstractSyntaxTrees/*.java pa1/src/miniJava/ContextualAnalysis/*.java pa1/src/miniJava/SyntacticAnalyzer/*.java pa1/src/miniJava/CodeGeneration/*.java pa1/src/miniJava/CodeGeneration/x64/*.java pa1/src/miniJava/CodeGeneration/x64/ISA/*.java 
 
 java miniJava.Compiler /home/nik/Documents/College/Comp_520/MiniJava/test.minijava
+
+objdump -D a.out -Mintel
