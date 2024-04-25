@@ -464,7 +464,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		ref.ref.visit(this, false);
+		ref.ref.visit(this, arg);
 		FieldDecl decl = (FieldDecl)ref.id.decl;
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX,true), decl.indexInClass*8));
