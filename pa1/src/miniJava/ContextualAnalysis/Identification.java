@@ -360,6 +360,19 @@ public class Identification implements Visitor<Context,Context> {
                 error.reportError("Cannot reference "+varname+" during assignment"+ " at " + id.posn.toString());
             }
         }
+        if(insideQref)
+        {
+            if(id.decl == null)
+            {
+                Declaration decl = ScopedIdentification.GetMemberDecl(arg.GetContextClass(),id.spelling);
+                if(decl != null)
+                {
+                    id.decl = decl;
+                }else {
+                    error.reportError("Identifier for "+id.spelling+" does not exist"+ " at " + id.posn.toString());
+                }
+            }
+        }
         if(id.decl == null)
         {
             Declaration decl = ScopedIdentification.findDeclaration(id.spelling, arg);

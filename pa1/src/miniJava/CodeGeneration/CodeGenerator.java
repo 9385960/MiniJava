@@ -262,8 +262,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitVardeclStmt(VarDeclStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		stmt.varDecl.visit(this,(Object)true);
-        stmt.initExp.visit(this, null);
+		stmt.varDecl.visit(this,false);
+        stmt.initExp.visit(this, (Object)true);
 
         _asm.add(new Pop(new ModRMSIB(stmt.varDecl.entity.getRegister(),stmt.varDecl.entity.getOffset())));
         return null;
