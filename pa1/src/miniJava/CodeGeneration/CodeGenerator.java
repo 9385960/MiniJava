@@ -361,7 +361,45 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIfStmt(IfStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIfStmt'");
+
+		//Evaluate Condition
+		stmt.cond.visit(this,true);
+
+		//Get Value
+
+		_asm.add(new Pop(Reg64.RAX));
+
+		//Compare compare to 0
+		_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,true),0));		
+
+		//Check if we have an else stmt
+		if(stmt.elseStmt == null)
+		{
+			//If we don't have else stmt
+			//since we already compared potentially must jump past block so je 0
+			int indexToPatch = _asm.add(new CondJmp(Condition.E,0));
+			int startSize = _asm.getSize();
+				
+				//We dont know where to jump so we need to store the index to patch later
+				//We need to evaluate the stmt.thenStmt
+			stmt.thenStmt.visit(this,null);
+			int endOffset = _asm.getSize();
+				//Patch jump instruction
+			_asm.patch(indexToPatch,new CondJmp(Condition.E,endOffset-startSize));
+		}else{
+			//If we do have else statment
+				//Check if the evaluated condition is 0
+				//If it is we must jump to else block so je 0
+				//We dont know where to jump so we need to store the index to patch later
+				//We need to evaluate the stmt.thenStmt
+				//Patch jump instruction that jumps to else statement
+				//We must add a jump instruction at the end to jump past the else block
+				//we visit the stmt.elseStmt
+				//patch jump instruction that jumps past the else statemeent
+		}
+
+		//throw new UnsupportedOperationException("Unimplemented method 'visitIfStmt'");
+		return null;
 	}
 
 	@Override
@@ -392,6 +430,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitBinaryExpr(BinaryExpr expr, Object arg) {
 		// TODO Auto-generated method stub
+		boolean pushed = false;
 		Operator op = expr.operator;
 		expr.left.visit(this,false);
 		expr.right.visit(this,false);
@@ -405,16 +444,33 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Or(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
 		}else if(op.spelling.equals(">"))
 		{
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
 			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.GT,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
+
 		}else if(op.spelling.equals(">="))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.GTE,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
 		}else if(op.spelling.equals("<"))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.LT,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
 		}else if(op.spelling.equals("<="))
 		{
-			_asm.add(new And(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
+			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.LTE,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
 		}else if(op.spelling.equals("+"))
 		{
 			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
@@ -434,6 +490,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		{
 			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
 		}
+		if(!pushed)
 		_asm.add(new Push(Reg64.RAX));
 		return null;
 	}
@@ -483,7 +540,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitThisRef(ThisRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitThisRef'");
+		_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
+		return null;
 	}
 
 	@Override

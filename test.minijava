@@ -13,6 +13,12 @@ class MainClass {
       f.s.f.n = 48 + 7;
       int tstvar = f.n;
 
+      if(tstvar > 10)
+      {
+         System.out.println(65);
+         System.out.println(10);
+      }
+
       System.out.println(tstvar);
    }
 }
