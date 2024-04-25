@@ -390,12 +390,21 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			//If we do have else statment
 				//Check if the evaluated condition is 0
 				//If it is we must jump to else block so je 0
+				int indexElseToPatch = _asm.add(new CondJmp(Condition.E,0));
+				int thenStart = _asm.getSize();
 				//We dont know where to jump so we need to store the index to patch later
 				//We need to evaluate the stmt.thenStmt
-				//Patch jump instruction that jumps to else statement
+				stmt.thenStmt.visit(this,null);
 				//We must add a jump instruction at the end to jump past the else block
+				int indexJumpToPatch = _asm.add(new Jmp(0));
+				//Patch jump instruction that jumps to else statement
+				int elseStart = _asm.getSize();
+				_asm.patch(indexElseToPatch,new CondJmp(Condition.E,elseStart-thenStart));
 				//we visit the stmt.elseStmt
+				stmt.elseStmt.visit(this,null);
 				//patch jump instruction that jumps past the else statemeent
+				int elseEnd = _asm.getSize();
+				_asm.patch(indexJumpToPatch, new Jmp(elseEnd-elseStart));
 		}
 
 		//throw new UnsupportedOperationException("Unimplemented method 'visitIfStmt'");

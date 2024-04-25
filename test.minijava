@@ -17,6 +17,9 @@ class MainClass {
       {
          System.out.println(65);
          System.out.println(10);
+      }else{
+         System.out.println(66);
+         System.out.println(10);
       }
 
       System.out.println(tstvar);
