@@ -300,16 +300,16 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitVardeclStmt(VarDeclStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		stmt.varDecl.visit(this,false);
-        stmt.initExp.visit(this, (Object)true);
-
-        _asm.add(new Pop(new ModRMSIB(stmt.varDecl.entity.getRegister(),stmt.varDecl.entity.getOffset())));
+		stmt.varDecl.visit(this,true);
+        stmt.initExp.visit(this,false);
+        _asm.add(new Pop(Reg64.RAX));
+        _asm.add(new Mov_rmr(new ModRMSIB(stmt.varDecl.entity.getRegister(),stmt.varDecl.entity.getOffset(),Reg64.RAX)));
         return null;
 	}
 
 	@Override
 	public Object visitAssignStmt(AssignStmt stmt, Object arg) {
-		stmt.ref.visit(this, false);
+		stmt.ref.visit(this, true);
         stmt.val.visit(this, null);
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Pop(Reg64.RBX));
@@ -352,7 +352,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitReturnStmt(ReturnStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		stmt.returnExpr.visit(this, true);
+		stmt.returnExpr.visit(this, false);
 		_asm.add(new Pop(Reg64.RAX));
 		return null;
 		//throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
@@ -373,7 +373,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitUnaryExpr(UnaryExpr expr, Object arg) {
 		Operator op = expr.operator;
-		expr.expr.visit(this,true);
+		expr.expr.visit(this,false);
 		//Get value into register
 		_asm.add(new Pop(Reg64.RAX));
 		if(op.spelling.equals("-"))
@@ -393,8 +393,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitBinaryExpr(BinaryExpr expr, Object arg) {
 		// TODO Auto-generated method stub
 		Operator op = expr.operator;
-		expr.left.visit(this,true);
-		expr.right.visit(this,true);
+		expr.left.visit(this,false);
+		expr.right.visit(this,false);
 		_asm.add(new Pop(Reg64.RCX));
 		_asm.add(new Pop(Reg64.RAX));
 		if(op.spelling.equals("&&"))
@@ -489,12 +489,19 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		//if((boolean)arg)//Want the effective address
-		//{
-		//	_asm.add(new Lea(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
-		//}
+		if(arg != null)
+		{
+			if((boolean)arg)//Want the effective address
+			{
+				_asm.add(new Lea(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
+			}else{//want the value
+				_asm.add(new Mov_rrm(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
+			}
+		}else{
+			_asm.add(new Mov_rrm(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
+		}
+		
 		//ref.id.visit(this,null);
-		_asm.add(new Mov_rrm(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
 		_asm.add(new Push(Reg64.RAX));
 		return null;
 	}
@@ -502,18 +509,22 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
+		//Visit the left side of the qual ref
 		ref.ref.visit(this, (Object)false);
+		//Get the field declaration of the current id
 		FieldDecl decl = (FieldDecl)ref.id.decl;
+		//Get the value of the previous register
 		_asm.add(new Pop(Reg64.RAX));
-		_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX,true), decl.indexInClass*8));
-		_asm.add(new Add(new ModRMSIB(Reg64.RAX, Reg64.RBX)));
+		//Add the current 
+		//_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX,true), decl.indexInClass*8));
+		//_asm.add(new Add(new ModRMSIB(Reg64.RAX, Reg64.RBX)));
 		if((boolean)arg)
 		{
-			_asm.add(new Push(new ModRMSIB(Reg64.RAX,0)));
+			_asm.add(new Lea(new ModRMSIB(Reg64.RAX,decl.indexInClass*8,Reg64.RAX)));
 		}else{
-			_asm.add(new Push(Reg64.RAX));
+			_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,decl.indexInClass*8,Reg64.RAX)));
 		}
-		
+		_asm.add(new Push(Reg64.RAX));
         return null;
 	}
 
