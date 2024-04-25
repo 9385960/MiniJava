@@ -1,34 +1,14 @@
 /**
  * COMP 520
- * simple int value and printing 
+ * int arithmetic
  */
 class MainClass {
    public static void main (String [] args) {
-      B.test(64+1);
-      B b = new B();
-      A a = new A();
-      b.x = 65;
-      a.y = 66;
-      System.out.println(b.x);
-      System.out.println(a.y);
-      System.out.println(b.x);
-      System.out.println(10);
-      
-   }
-}
-
-class B {
-   
-   int x;
-
-   public static void test(int x)
-   {
-      //System.out.println(11);
-      int y = x + 2;
+	   int x = 65;
+      int y = x;
+      int z = 2;
       System.out.println(y);
    }
 }
 
-class A {
-   int y;
-}
+

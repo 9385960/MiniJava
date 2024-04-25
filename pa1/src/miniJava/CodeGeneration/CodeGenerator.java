@@ -448,6 +448,9 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		//	_asm.add(new Lea(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
 		//}
 		//ref.id.visit(this,null);
+		_asm.add(new Mov_rrm(new ModRMSIB(ref.id.decl.entity.getRegister(),ref.id.decl.entity.getOffset(),Reg64.RAX)));
+		_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+		_asm.add(new Push(Reg64.RAX));
 		return null;
 	}
 
