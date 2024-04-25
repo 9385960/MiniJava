@@ -1,14 +1,23 @@
 /**
  * COMP 520
- * int arithmetic
+ * Object creation and field reference
  */
 class MainClass {
    public static void main (String [] args) {
-	   int x = 65;
-      int y = x;
-      int z = 2;
-      System.out.println(y);
+
+       FirstClass f = new FirstClass ();
+	   f.n = 48;
+       int tstvar = 5 + f.n;
+
+       System.out.println(tstvar);
    }
 }
+
+class FirstClass
+{
+   int n;
+
+}
+
 
 

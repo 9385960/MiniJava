@@ -21,7 +21,7 @@ public class ScopedIdentification {
         FieldDeclList fields = new FieldDeclList();
 		MethodDeclList methods = new MethodDeclList();
         TypeDenoter type = new ClassType(id, null);
-        FieldDecl toadd = new FieldDecl(false,true,type,"out",null);
+        FieldDecl toadd = new FieldDecl(false,true,type,"out",null,0);
         AddClassMember("System", "out", toadd);
         fields.add(toadd);
         ClassDecl classDecl = new ClassDecl("System", fields, methods, null);
@@ -35,7 +35,7 @@ public class ScopedIdentification {
 		methods = new MethodDeclList();
 
         type = new BaseType(TypeKind.VOID, null);
-        toadd = new FieldDecl(false,false,type,"println",null);
+        toadd = new FieldDecl(false,false,type,"println",null,-1);
         ParameterDeclList parameterList = new ParameterDeclList();
         TypeDenoter parameterType = new BaseType(TypeKind.INT, null);
         parameterList.add(new ParameterDecl(parameterType, "n", null));

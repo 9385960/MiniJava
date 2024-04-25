@@ -9,8 +9,11 @@ import miniJava.SyntacticAnalyzer.SourcePosition;
 
 public class FieldDecl extends MemberDecl {
 	
-	public FieldDecl(boolean isPrivate, boolean isStatic, TypeDenoter t, String name, SourcePosition posn){
+	public int indexInClass;
+
+	public FieldDecl(boolean isPrivate, boolean isStatic, TypeDenoter t, String name, SourcePosition posn, int index){
     super(isPrivate, isStatic, t, name, posn);
+	indexInClass = index;
 	}
 	
 	public FieldDecl(MemberDecl md, SourcePosition posn) {

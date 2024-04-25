@@ -9,6 +9,8 @@ public class Parser {
 	private Scanner _scanner;
 	private ErrorReporter _errors;
 	private Token _currentToken;
+	private int numstaticfields = 0;
+	private int nummemberfields = 0;
 	//Makes a new parser with the required objects
 	public Parser( Scanner scanner, ErrorReporter errors ) {
 		this._scanner = scanner;
@@ -44,6 +46,8 @@ public class Parser {
 	// ClassDeclaration ::= class identifier { (Visiblity Access (FieldDeclaration|MethodDeclaration))* }
 	private ClassDecl parseClassDeclaration() throws SyntaxError
 	{
+		nummemberfields = 0;
+		numstaticfields = 0;
 		FieldDeclList fields = new FieldDeclList();
 		MethodDeclList methods = new MethodDeclList();
 		SourcePosition position = _scanner.getCurrentToken().getTokenPosition();
@@ -107,7 +111,16 @@ public class Parser {
 		accept(TokenType.ID);
 		//Need to accept a SemiColon
 		accept(TokenType.SEMICOLON);
-		FieldDecl fieldDecl = new FieldDecl(isPrivate, isStatic, type, name, position);
+		int index;
+		if(isStatic)
+		{
+			index = numstaticfields;
+			numstaticfields += 1;
+		}else{
+			index = nummemberfields;
+			nummemberfields += 1;
+		}
+		FieldDecl fieldDecl = new FieldDecl(isPrivate, isStatic, type, name, position,index);
 		ScopedIdentification.AddCurrentClassMember(name, fieldDecl);
 		return fieldDecl;
 	}
@@ -116,7 +129,7 @@ public class Parser {
 	private MethodDecl parseMethodDec(boolean isPrivate, boolean isStatic, TypeDenoter mt, SourcePosition position)
 	{
 		String name = _currentToken.getTokenText();
-		MemberDecl member = new FieldDecl(isPrivate,isStatic,mt,name,position);
+		MemberDecl member = new FieldDecl(isPrivate,isStatic,mt,name,position,-1);
 		ParameterDeclList parameterList = new ParameterDeclList();
 		StatementList statementList = new StatementList();
 		//Type or void has already been parsed

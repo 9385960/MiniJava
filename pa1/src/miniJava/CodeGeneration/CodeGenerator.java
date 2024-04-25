@@ -1,5 +1,7 @@
 package miniJava.CodeGeneration;
 
+import javax.print.DocFlavor.READER;
+
 import miniJava.ErrorReporter;
 import miniJava.AbstractSyntaxTrees.*;
 import miniJava.AbstractSyntaxTrees.Package;
@@ -269,8 +271,11 @@ public class CodeGenerator implements Visitor<Object, Object> {
 
 	@Override
 	public Object visitAssignStmt(AssignStmt stmt, Object arg) {
-		stmt.ref.visit(this, null);
+		stmt.ref.visit(this, false);
         stmt.val.visit(this, null);
+		_asm.add(new Pop(Reg64.RAX));
+		_asm.add(new Pop(Reg64.RBX));
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBX,0,Reg64.RAX)));
         return null;
 	}
 
@@ -309,7 +314,10 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitReturnStmt(ReturnStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
+		stmt.returnExpr.visit(this, true);
+		_asm.add(new Pop(Reg64.RAX));
+		return null;
+		//throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
 	}
 
 	@Override
@@ -327,7 +335,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitUnaryExpr(UnaryExpr expr, Object arg) {
 		Operator op = expr.operator;
-		expr.expr.visit(this,null);
+		expr.expr.visit(this,true);
 		//Get value into register
 		_asm.add(new Pop(Reg64.RAX));
 		if(op.spelling.equals("-"))
@@ -347,8 +355,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitBinaryExpr(BinaryExpr expr, Object arg) {
 		// TODO Auto-generated method stub
 		Operator op = expr.operator;
-		expr.left.visit(this,null);
-		expr.right.visit(this,null);
+		expr.left.visit(this,true);
+		expr.right.visit(this,true);
 		_asm.add(new Pop(Reg64.RCX));
 		_asm.add(new Pop(Reg64.RAX));
 		if(op.spelling.equals("&&"))
@@ -395,7 +403,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitRefExpr(RefExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		expr.ref.visit(this,null);
+		expr.ref.visit(this,arg);
 		return null;
 	}
 
@@ -456,10 +464,18 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		String t = (String)ref.ref.visit(this, null);
-
-        String idname = ref.id.spelling;
-        Declaration decl = ScopedIdentification.GetMemberDecl(t, idname);
+		ref.ref.visit(this, false);
+		FieldDecl decl = (FieldDecl)ref.id.decl;
+		_asm.add(new Pop(Reg64.RAX));
+		_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX,true), decl.indexInClass*8));
+		_asm.add(new Add(new ModRMSIB(Reg64.RAX, Reg64.RBX)));
+		if((boolean)arg)
+		{
+			_asm.add(new Push(new ModRMSIB(Reg64.RAX,0)));
+		}else{
+			_asm.add(new Push(Reg64.RAX));
+		}
+		
         return null;
 	}
 
