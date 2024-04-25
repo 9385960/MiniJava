@@ -93,6 +93,10 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		prog.visit(this,null);
 		System.out.println("Outputting Byte Code");
 		_asm.outputFromMark();
+		if(!mainFound)
+		{
+			_errors.reportError("No Main Found.");
+		}
 		//TODO Output the file "a.out" if no errors
 		if( !_errors.hasErrors() )
 			makeElf("a.out");
@@ -181,6 +185,40 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		paramOffset = 8;
 		if(md.name.equals("main"))
 		{
+			if(mainFound)
+			{
+				_errors.reportError("Main Is Already Defined, can only have one main method at "+md.posn.toString());
+			}
+			if(!md.isStatic)
+			{
+				_errors.reportError("main must be static at "+md.posn.toString());
+			}
+			if(md.parameterDeclList.size() > 1)
+			{
+				_errors.reportError("Too many arguments for a main method "+md.posn.toString());
+			}
+			ParameterDecl decl = md.parameterDeclList.get(0);
+			if(decl.type instanceof ArrayType)
+			{
+				ArrayType type = (ArrayType)decl.type;
+				if(type.eltType instanceof ClassType)
+				{
+					ClassType element = (ClassType)type.eltType;
+					if(!element.className.spelling.equals("String"))
+					{
+						_errors.reportError("Incorrect Argument for main");
+					}
+				}else{
+					_errors.reportError("Incorrect Argument for main");
+				}
+
+			}else{
+				_errors.reportError("Incorrect Argument for main");
+			}
+			if(md.isPrivate)
+			{
+				_errors.reportError("main must be public at "+md.posn.toString());
+			}
 			System.out.println("Main Found");
 			mainFound = true;
 			entryPoint = _asm.getSize();
@@ -464,7 +502,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		ref.ref.visit(this, arg);
+		ref.ref.visit(this, (Object)false);
 		FieldDecl decl = (FieldDecl)ref.id.decl;
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX,true), decl.indexInClass*8));
