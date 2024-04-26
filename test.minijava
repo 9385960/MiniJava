@@ -5,14 +5,9 @@
 class MainClass {
    public static void main (String [] args) {
 
-      int aa_length = 4;
-      int [] aa = new int [aa_length];
-
-      aa[0] = 65; 
-      aa[1] = 10;
-      
-      System.out.println(aa[0]);
-      System.out.println(aa[1]);
+      A test = new A();
+      test.num = 65;
+      test.printnum();
    }
 }
 
