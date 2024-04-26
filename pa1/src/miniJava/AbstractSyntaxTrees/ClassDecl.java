@@ -9,10 +9,11 @@ import  miniJava.SyntacticAnalyzer.SourcePosition;
 
 public class ClassDecl extends Declaration {
 
-  public ClassDecl(String cn, FieldDeclList fdl, MethodDeclList mdl, SourcePosition posn) {
+  public ClassDecl(String cn, FieldDeclList fdl, MethodDeclList mdl, SourcePosition posn, int numStaticFields) {
 	  super(cn, null, posn);
 	  fieldDeclList = fdl;
 	  methodDeclList = mdl;
+    staticFieldNum = numStaticFields;
   }
   
   public <A,R> R visit(Visitor<A, R> v, A o) {
@@ -21,4 +22,5 @@ public class ClassDecl extends Declaration {
       
   public FieldDeclList fieldDeclList;
   public MethodDeclList methodDeclList;
+  public int staticFieldNum;
 }

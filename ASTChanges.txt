@@ -1,3 +1,5 @@
 Added a Declaration field to identifier
 
 Added a RuntimeEntity to Declaration
+
+Added an int to the field and class decl to get how many fields are in a class and what index a field has in the class

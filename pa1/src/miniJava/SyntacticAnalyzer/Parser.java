@@ -96,7 +96,7 @@ public class Parser {
 		}
 		//Finish the class with a Right Brace
 		accept(TokenType.RBRACE);
-		ClassDecl classDecl = new ClassDecl(className, fields, methods, position);
+		ClassDecl classDecl = new ClassDecl(className, fields, methods, position,numstaticfields);
 		ScopedIdentification.AddClass(className, classDecl);
 
 		return classDecl;

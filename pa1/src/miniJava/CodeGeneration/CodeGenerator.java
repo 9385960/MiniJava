@@ -342,6 +342,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		}
 		if(stmt.methodRef instanceof IdRef)
 		{
+			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
 			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)stmt.methodRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
 			
@@ -349,11 +350,19 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		}else if(stmt.methodRef instanceof QualRef)
 		{
 			QualRef qRef = (QualRef)stmt.methodRef;
-			//String contextClass = (String)qRef.ref.visit(this, null);
+			if(qRef.id.spelling.equals("println"))
+			{
+				PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
+				_asm.add(new Call(0));
+				patchCall.AddToPatch(location);
+				return null;
+			}
+			qRef.ref.visit(this, true);
 			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
 			patchCall.AddToPatch(location);
 		}
+
 		//throw new UnsupportedOperationException("Unimplemented method 'visitCallStmt'");
 		return null;
 	}
@@ -599,6 +608,27 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
+		if(ref.id.decl instanceof FieldDecl)
+		{	
+			FieldDecl decl = (FieldDecl)ref.id.decl;
+			//Get this
+			_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RBP,16,Reg64.RAX)));
+			//Load Offset
+			_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX, true), 8*decl.indexInClass));
+			//Add offset to this
+			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RBX)));
+			if(arg != null)
+			{
+				if(!(boolean)arg)//Want the effective address
+				{
+					_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+				}
+			}else{
+				_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+			}
+			_asm.add(new Push(Reg64.RAX));
+			return null;
+		}
 		if(arg != null)
 		{
 			if((boolean)arg)//Want the effective address

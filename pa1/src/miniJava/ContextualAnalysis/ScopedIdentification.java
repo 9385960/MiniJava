@@ -24,7 +24,7 @@ public class ScopedIdentification {
         FieldDecl toadd = new FieldDecl(false,true,type,"out",null,0);
         AddClassMember("System", "out", toadd);
         fields.add(toadd);
-        ClassDecl classDecl = new ClassDecl("System", fields, methods, null);
+        ClassDecl classDecl = new ClassDecl("System", fields, methods, null,0);
 
         AddClass("System", classDecl);
 
@@ -43,14 +43,14 @@ public class ScopedIdentification {
         MethodDecl methodtoadd = new MethodDecl(toadd, parameterList, statementList, null);
         AddClassMember("_PrintStream", "println", methodtoadd);
         methods.add(methodtoadd);
-        classDecl = new ClassDecl("_PrintStream", fields, methods, null);
+        classDecl = new ClassDecl("_PrintStream", fields, methods, null,0);
         AddClass("_PrintStream", classDecl);
 
         //TypeDenoter string = new BaseType(TypeKind.UNSUPPORTED, null);
         fields = new FieldDeclList();
 		methods = new MethodDeclList();
         AddClassList("String");
-        classDecl = new ClassDecl("String", fields, methods, null);
+        classDecl = new ClassDecl("String", fields, methods, null,0);
         AddClass("String", classDecl);
         //Declaration dec = new VarDecl(string, "String", null);
         TypeChecking.init(e);

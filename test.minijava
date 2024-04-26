@@ -15,3 +15,15 @@ class MainClass {
       System.out.println(aa[1]);
    }
 }
+
+class A {
+   int num;
+
+   public void printnum()
+   {
+      num = num + 1;
+      System.out.println(num);
+      System.out.println(10);
+   }
+
+}
