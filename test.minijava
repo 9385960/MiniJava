@@ -11,11 +11,11 @@ class MainClass {
          System.out.println(10);
       }else if(x < 70)
       {
-         System.our.println(x+2);
-         System.out.println(100);
+         System.out.println(x+2);
+         System.out.println(10);
       }else{
-         System.our.println(x+3);
-         System.out.println(100);
+         System.out.println(x+3);
+         System.out.println(10);
       }
       
    }
