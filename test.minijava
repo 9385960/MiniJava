@@ -19,6 +19,7 @@ class MainClass {
       {
          System.out.println(i);
          System.out.println(10);
+         i = i + 1;
       }
 
       System.out.println(tstvar);
