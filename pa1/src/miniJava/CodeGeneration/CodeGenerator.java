@@ -182,7 +182,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
 		currentOffset = -8;
-		paramOffset = 8;
+		if(md.isStatic)
+		{
+			paramOffset = 8;
+		}else{
+			paramOffset = 16;
+		}
+		
 		if(md.name.equals("main"))
 		{
 			if(mainFound)
