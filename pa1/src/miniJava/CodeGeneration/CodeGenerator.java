@@ -429,7 +429,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		//Evaluate Stmt body
 		stmt.body.visit(this, null);
 		int totalSize = _asm.getSize();
-		_asm.add(new Jmp(startOffset-totalSize));
+		_asm.add(new Jmp(totalSize,startOffset,false));
 		_asm.patch(conditionFalse,new CondJmp(Condition.E,totalSize-conditionOffset));
 		//throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
 		return null;
