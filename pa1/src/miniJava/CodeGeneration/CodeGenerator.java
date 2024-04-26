@@ -173,7 +173,14 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitFieldDecl(FieldDecl fd, Object arg) {
 		// TODO Auto-generated method stub
-		fd.entity = new RuntimeEntity(staticClassOffset,Reg64.R12);
+		if(fd.isStatic)
+		{
+			fd.entity = new RuntimeEntity(staticClassOffset,Reg64.R12);
+			staticClassOffset += 8;
+		}else{
+			fd.entity = new RuntimeEntity(0,null);
+		}
+		
 		fd.type.visit(this, null);
 		return null;
 	}
@@ -182,13 +189,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
 		currentOffset = -8;
-		if(md.isStatic)
-		{
-			paramOffset = 8;
-		}else{
-			paramOffset = 16;
-		}
-		
+		paramOffset = 8;
 		if(md.name.equals("main"))
 		{
 			if(mainFound)
