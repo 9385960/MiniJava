@@ -512,10 +512,18 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Idiv(new ModRMSIB(Reg64.RCX,Reg64.RAX)));
 		}else if(op.spelling.equals("=="))
 		{
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
 			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.E,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
 		}else if(op.spelling.equals("!="))
 		{
+			_asm.add(new Xor(new ModRMSIB(Reg64.RDX,Reg64.RDX)));
 			_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,Reg64.RCX)));
+			_asm.add(new SetCond(Condition.NE,Reg8.DL));
+			_asm.add(new Push(Reg64.RDX));
+			pushed = true;
 		}
 		if(!pushed)
 		_asm.add(new Push(Reg64.RAX));
