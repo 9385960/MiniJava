@@ -5,39 +5,20 @@
 class MainClass {
    public static void main (String [] args) {
 
-      FirstClass f = new FirstClass ();
-      f.s = new SecondClass ();
-      f.s.f = f;
-
-      f.testme ();
+      A a = new A ();
+      a.n = 65;
+      int x = a.getNum();
+      System.out.println(x);
+      System.out.println(10);
    }
 }
 
-class FirstClass
+class A
 {
    int n;
-   SecondClass s;
-
-   public void testme ()
+   int getNum()
    {
-      int tstvar = 1;
-
-      n = 4;
-      tstvar = 1 + foo (3, 4);
-      System.out.println(37 + tstvar);
-	  System.out.println(tstvar + 38);
+      return n;
    }
-
-   public int foo (int x, int y)
-   {
-      return (n + x + y);
-   }
-
-}
-
-class SecondClass
-{
-   int n;
-   FirstClass f;
 }
 
