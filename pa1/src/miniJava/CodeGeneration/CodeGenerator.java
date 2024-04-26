@@ -226,7 +226,6 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			{
 				_errors.reportError("main must be public at "+md.posn.toString());
 			}
-			System.out.println("Main Found");
 			mainFound = true;
 			entryPoint = _asm.getSize();
 			_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
@@ -259,8 +258,6 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitParameterDecl(ParameterDecl pd, Object arg) {
 		// TODO Auto-generated method stub
-		System.out.println(pd);
-		System.out.println(pd.name);
 		pd.entity = new RuntimeEntity(paramOffset,Reg64.RBP);
 		paramOffset += 8;
 		//pd.type.visit(this,arg);

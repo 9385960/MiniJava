@@ -6,8 +6,11 @@ class MainClass {
    public static void main (String [] args) {
 
       A test = new A();
+      int x = 0;
+      x = 66;
       test.num = 65;
       System.out.println(test.num);
+      System.out.println(x);
       System.out.println(10);
       test.printnum();
    }
