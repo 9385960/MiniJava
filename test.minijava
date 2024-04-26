@@ -13,12 +13,11 @@ class MainClass {
       f.s.f.n = 48 + 7;
       int tstvar = f.n;
 
-      if(tstvar > 10)
+      int i = 48;
+
+      while(i < 48 + 10)
       {
-         System.out.println(65);
-         System.out.println(10);
-      }else{
-         System.out.println(66);
+         System.out.println(i);
          System.out.println(10);
       }
 

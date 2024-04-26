@@ -414,7 +414,25 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitWhileStmt(WhileStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
+		//Store where to jump to loop back
+		int startOffset = _asm.getSize();
+		//Evaluate Conditional Statement
+		stmt.cond.visit(this, true);
+		//Get Value
+		_asm.add(new Pop(Reg64.RAX));
+		//Compare compare to 0
+		_asm.add(new Cmp(new ModRMSIB(Reg64.RAX,true),0));		
+		//If condition evaluates to 0 we need to jump past the while stmt
+		//We need to store current offset
+		int conditionOffset = _asm.getSize();
+		int conditionFalse = _asm.add(new CondJmp(Condition.E,0));
+		//Evaluate Stmt body
+		stmt.body.visit(this, null);
+		int totalSize = _asm.getSize();
+		_asm.add(new Jmp(startOffset-totalSize));
+		_asm.patch(conditionFalse,new CondJmp(Condition.E,_asm.getSize()-conditionOffset));
+		//throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
+		return null;
 	}
 
 	@Override
