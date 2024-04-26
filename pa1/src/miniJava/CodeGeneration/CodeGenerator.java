@@ -577,7 +577,39 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitCallExpr(CallExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitCallExpr'");
+		//throw new UnsupportedOperationException("Unimplemented method 'visitCallExpr'");
+		ExprList args = expr.argList;
+		for(int i = args.size()-1; i >=0; i--)
+		{
+			args.get(i).visit(this,false);
+		}
+		if(expr.functionRef instanceof IdRef)
+		{
+			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
+			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)expr.functionRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
+			_asm.add(new Call(0));
+			_asm.add(new Pop(Reg64.RBX));
+			_asm.add(new Push(Reg64.RAX));
+			patchCall.AddToPatch(location);
+		}else if(expr.functionRef instanceof QualRef)
+		{
+			QualRef qRef = (QualRef)expr.functionRef;
+			if(qRef.id.spelling.equals("println"))
+			{
+				PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
+				_asm.add(new Call(0));
+				patchCall.AddToPatch(location);
+				return null;
+			}
+			qRef.ref.visit(this, false);
+			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
+			_asm.add(new Call(0));
+			_asm.add(new Pop(Reg64.RBX));
+			_asm.add(new Push(Reg64.RAX));
+			patchCall.AddToPatch(location);
+		}
+
+		return null;
 	}
 
 	@Override
