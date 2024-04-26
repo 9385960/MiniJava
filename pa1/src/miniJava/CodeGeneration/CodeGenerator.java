@@ -361,7 +361,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 				patchCall.AddToPatch(location);
 				return null;
 			}
-			qRef.ref.visit(this, true);
+			qRef.ref.visit(this, false);
 			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
 			_asm.add(new Pop(Reg64.RAX));
