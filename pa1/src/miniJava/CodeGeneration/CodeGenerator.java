@@ -317,7 +317,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitAssignStmt(AssignStmt stmt, Object arg) {
 		stmt.ref.visit(this, true);
-        stmt.val.visit(this, null);
+        stmt.val.visit(this, false);
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Pop(Reg64.RBX));
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBX,0,Reg64.RAX)));
@@ -345,7 +345,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		ExprList args = stmt.argList;
 		for(int i = args.size()-1; i >=0; i--)
 		{
-			args.get(i).visit(this,true);
+			args.get(i).visit(this,false);
 		}
 		if(stmt.methodRef instanceof IdRef)
 		{
