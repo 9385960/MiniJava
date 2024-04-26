@@ -13,12 +13,4 @@ class MainClass {
 
 class A {
    int num;
-
-   public void printnum()
-   {
-      num = num + 1;
-      System.out.println(num);
-      System.out.println(10);
-   }
-
 }

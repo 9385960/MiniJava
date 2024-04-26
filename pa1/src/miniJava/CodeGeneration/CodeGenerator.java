@@ -617,7 +617,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
 		if(ref.id.decl instanceof FieldDecl)
-		{	
+		{	System.out.println("Visiting " + ref.id.spelling+" inside "+currentClass);
 			FieldDecl decl = (FieldDecl)ref.id.decl;
 			//Get this
 			_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RBP,16,Reg64.RAX)));
@@ -637,6 +637,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Push(Reg64.RAX));
 			return null;
 		}
+
 		if(arg != null)
 		{
 			if((boolean)arg)//Want the effective address
@@ -679,9 +680,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIdentifier(Identifier id, Object arg) {
 		// TODO Auto-generated method stub
-		System.out.println(id.decl);
-		System.out.println(id.decl.name);
-		_asm.add(new Push(new ModRMSIB(id.decl.entity.getRegister(),id.decl.entity.getOffset())));
+		//_asm.add(new Push(new ModRMSIB(id.decl.entity.getRegister(),id.decl.entity.getOffset())));
 		//throw new UnsupportedOperationException("Unimplemented method 'visitIdentifier'");
 		return null;
 	}
