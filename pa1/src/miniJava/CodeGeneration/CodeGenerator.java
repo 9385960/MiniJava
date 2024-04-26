@@ -326,6 +326,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Pop(Reg64.RBX));
 		_asm.add(new Pop(Reg64.RCX));
+		_asm.add(new Imul(Reg64.RBX,new ModRMSIB(Reg64.RBX, true),8));
 		_asm.add(new Add(new ModRMSIB(Reg64.RBX,Reg64.RCX)));
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBX,0,Reg64.RAX)));
 		return null;
@@ -552,6 +553,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		expr.ixExpr.visit(this,false);
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Pop(Reg64.RBX));
+		_asm.add(new Imul(Reg64.RAX,new ModRMSIB(Reg64.RAX, true),8));
 		_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RBX)));
 		_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
 		_asm.add(new Push(Reg64.RAX));
