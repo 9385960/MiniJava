@@ -320,7 +320,15 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIxAssignStmt(IxAssignStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIxAssignStmt'");
+		stmt.ref.visit(this, true);
+		stmt.ix.visit(this,false);
+		stmt.exp.visit(this,false);
+		_asm.add(new Pop(Reg64.RAX));
+		_asm.add(new Pop(Reg64.RBX));
+		_asm.add(new Pop(Reg64.RCX));
+		_asm.add(new Add(new ModRMSIB(Reg64.RBX,Reg64.RCX)));
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBX,0,Reg64.RAX)));
+		return null;
 	}
 
 	@Override
@@ -540,7 +548,14 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIxExpr(IxExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIxExpr'");
+		expr.ref.visit(this, true);
+		expr.ixExpr.visit(this,false);
+		_asm.add(new Pop(Reg64.RAX));
+		_asm.add(new Pop(Reg64.RBX));
+		_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RBX)));
+		_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+		_asm.add(new Push(Reg64.RAX));
+		return null;
 	}
 
 	@Override
