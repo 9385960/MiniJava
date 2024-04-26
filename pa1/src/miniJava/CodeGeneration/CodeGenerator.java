@@ -338,7 +338,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		ExprList args = stmt.argList;
 		for(int i = args.size()-1; i >=0; i--)
 		{
-			args.get(i).visit(this,null);
+			args.get(i).visit(this,true);
 		}
 		if(stmt.methodRef instanceof IdRef)
 		{
