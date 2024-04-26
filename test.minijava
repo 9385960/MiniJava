@@ -1,24 +1,22 @@
 /**
  * COMP 520
- * Complex method invocation
+ * Method invocation and recursion
  */
 class MainClass {
    public static void main (String [] args) {
-
-      A a = new A ();
-      a.n = 65;
-      int x = a.getNum();
-      System.out.println(x);
-      System.out.println(10);
+      int x = 65;
+      if(x < 66)
+      {
+         System.out.println(x);
+         System.out.println(10;)
+      }else if(x < 70)
+      {
+         System.our.println(x+2);
+         System.out.println(100);
+      }else{
+         System.our.println(x+3);
+         System.out.println(100);
+      }
+      
    }
-}
-
-class A
-{
-   int n;
-   int getNum()
-   {
-      return n;
-   }
-}
 
