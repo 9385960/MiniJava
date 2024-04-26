@@ -7,6 +7,8 @@ class MainClass {
 
       A test = new A();
       test.num = 65;
+      System.out.println(test.num);
+      System.out.println(10);
       test.printnum();
    }
 }
