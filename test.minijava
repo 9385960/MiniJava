@@ -8,7 +8,7 @@ class MainClass {
       if(x < 66)
       {
          System.out.println(x);
-         System.out.println(10;)
+         System.out.println(10);
       }else if(x < 70)
       {
          System.our.println(x+2);
@@ -19,4 +19,5 @@ class MainClass {
       }
       
    }
+}
 
