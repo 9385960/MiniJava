@@ -189,7 +189,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
 		currentOffset = -8;
-		paramOffset = 8;
+		paramOffset = 24;
 		if(md.name.equals("main"))
 		{
 			if(mainFound)
@@ -349,7 +349,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
 			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)stmt.methodRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			
+			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
 			patchCall.AddToPatch(location);
 		}else if(stmt.methodRef instanceof QualRef)
 		{
@@ -364,7 +364,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			qRef.ref.visit(this, false);
 			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Pop(Reg64.RAX));
+			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
 			patchCall.AddToPatch(location);
 		}
 
@@ -588,7 +588,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
 			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)expr.functionRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Pop(Reg64.RBX));
+			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
 			_asm.add(new Push(Reg64.RAX));
 			patchCall.AddToPatch(location);
 		}else if(expr.functionRef instanceof QualRef)
@@ -604,7 +604,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			qRef.ref.visit(this, false);
 			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Pop(Reg64.RBX));
+			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
 			_asm.add(new Push(Reg64.RAX));
 			patchCall.AddToPatch(location);
 		}

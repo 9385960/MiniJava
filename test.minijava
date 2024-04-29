@@ -21,4 +21,17 @@ class MainClass {
         return res;
     }
 }
+/*
+class MainClass {
+   public static void main (String [] args) {
 
+      int i = 65;
+      while(i < 91)
+      {
+         System.out.println(i);
+         System.out.println(10);
+         i = i+1;
+      }
+   }
+}
+*/
