@@ -448,12 +448,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		//If condition evaluates to 0 we need to jump past the while stmt
 		//We need to store current offset
 		int conditionOffset = _asm.getSize();
-		int conditionFalse = _asm.add(new CondJmp(Condition.E,0));
+		Instruction jump = new CondJmp(Condition.E,0);
+		int conditionFalse = _asm.add(jump);
 		//Evaluate Stmt body
 		stmt.body.visit(this, null);
 		int totalSize = _asm.getSize();
 		_asm.add(new Jmp(totalSize,startOffset,false));
-		_asm.patch(conditionFalse,new CondJmp(Condition.E,totalSize-conditionOffset));
+		_asm.patch(jump.listIdx,new CondJmp(Condition.E,jump.startAddress,_asm.getSize(),false));
 		//throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
 		return null;
 	}
