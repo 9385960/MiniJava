@@ -383,6 +383,9 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		// TODO Auto-generated method stub
 		stmt.returnExpr.visit(this, false);
 		_asm.add(new Pop(Reg64.RAX));
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RSP,Reg64.RBP)));
+        _asm.add(new Pop(new ModRMSIB(Reg64.RBP,true)));
+		_asm.add(new Ret());
 		return null;
 		//throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
 	}
