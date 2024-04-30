@@ -19,24 +19,11 @@ class MainClass {
    }
 }
 
-/*class MainClass {
-   public static void main (String [] args) {
+class A {
+   int b;
 
-      int aa_length = 10;
-      int [] aa = new int [aa_length];
-
-      int i = 0;
-      while (i < aa_length) {
-          aa[i] = 48+i;
-          i = i + 1;
-      }
-      int j = 0;
-      while (j < aa_length) {
-          System.out.println(aa[j]);
-          System.out.println(10);
-          j = j + 1;
-      }
-      System.out.println(aa[9]);
-      System.out.println(10);
+   public int add(int a)
+   {
+      return true;
    }
-}*/
+}

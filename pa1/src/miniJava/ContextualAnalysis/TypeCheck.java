@@ -98,9 +98,14 @@ public class TypeCheck implements Visitor<String,String> {
             Statement lastStmt = md.statementList.get(md.statementList.size()-1);
             if(!(lastStmt instanceof ReturnStmt))
             {
-                error.reportError("Must have return statment as the last statement in a method.");
+                error.reportError("Must have return statment as the last statement in a method at "+md.posn);
             }else{
                 //Must check return types match
+                if(!lastStmt.visit(this,null).equals(GetTypeFromDeclaration(md)))
+                {
+                    error.reportError("Return type must match method type at "+lastStmt.posn);
+                }
+
             }
         }
 

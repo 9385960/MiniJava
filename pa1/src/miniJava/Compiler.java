@@ -52,8 +52,8 @@ public class Compiler {
 			System.out.println("Error");
 			error.outputErrors();
 		}else{
-			ASTDisplay disp = new ASTDisplay();
-			disp.showTree(tree);
+			//ASTDisplay disp = new ASTDisplay();
+			//disp.showTree(tree);
 			Identification id = new Identification();
 			id.identify(tree,error);
 			if(error.hasErrors())
@@ -75,9 +75,6 @@ public class Compiler {
 			}
 			
 		}
-		//ModRMSIB m = new ModRMSIB(Reg64.RAX,Reg64.RBX,2,2147483647,Reg64.RCX);
-		//Instruction a = new Push(200);
-		//renderBytes(a.getBytes());
 	}
 
 	private static void renderBytes(byte[] bArray)

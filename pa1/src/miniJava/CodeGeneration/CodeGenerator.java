@@ -31,14 +31,6 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		
 
 		_asm = new InstructionList();
-
-		_asm.markOutputStart();
-
-		/*_asm.add(new Push(65));
-		_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
-		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
-		makePrintln();
-		*/
 		patchCall.AddMethod((MethodDecl)ScopedIdentification.GetMemberDecl("_PrintStream","println"),_asm.getSize());
 		_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
@@ -91,8 +83,6 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		//     _asm.patch( someJump.listIdx, new Jmp(asm.size(), someJump.startAddress, false) );
 		
 		prog.visit(this,null);
-		System.out.println("Outputting Byte Code");
-		_asm.outputFromMark();
 		if(!mainFound)
 		{
 			_errors.reportError("No Main Found.");
