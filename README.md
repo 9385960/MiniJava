@@ -43,4 +43,4 @@ class ArrayA{
 
 ```
 
-Additionally decision made is to make everything 64 bit even though ints are supposed to be 32 bit. There is no checking done to make sure this complies with JLS.
+Additionally I made the decision make everything 64 bit even though ints are supposed to be 32 bit. There is no checking done to make sure this complies with JLS.
