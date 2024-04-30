@@ -285,9 +285,11 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitBlockStmt(BlockStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
+		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.R10,Reg64.RSP)));
 		for (Statement s: stmt.sl) {
         	s.visit(this, null);
         }
+        _asm.add(new Mov_rmr(new ModRMSIB(Reg64.RSP,Reg64.R10)));
         return null;
 	}
 
@@ -651,7 +653,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
 		if(ref.id.decl instanceof FieldDecl)
-		{	System.out.println("Visiting " + ref.id.spelling+" inside "+currentClass);
+		{	//System.out.println("Visiting " + ref.id.spelling+" inside "+currentClass);
 			FieldDecl decl = (FieldDecl)ref.id.decl;
 			//Get this
 			_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RBP,16,Reg64.RAX)));
