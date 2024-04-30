@@ -2,7 +2,7 @@
 
 The idea of a compiler is to take code in one language and translate it into another equivalent form, whether that be an intermediate language or machine code. The main components of a compiler can be seen in the following figure
 
-![A diagram of a simple compiler](Images\CompilerDiagram.png)
+![A diagram of a simple compiler](Images/CompilerDiagram.png)
 
 ## Syntactic Analysis
 
