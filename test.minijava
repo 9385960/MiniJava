@@ -18,12 +18,3 @@ class MainClass {
       System.out.println(tstvar);
    }
 }
-
-class A {
-   int b;
-
-   public int add(int a)
-   {
-      return true;
-   }
-}

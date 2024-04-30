@@ -89,6 +89,13 @@ public class TypeCheck implements Visitor<String,String> {
 
     @Override
     public String visitMethodDecl(MethodDecl md, String arg) {
+        if(md.name.equals("main"))
+        {
+            if(md.type.typeKind != TypeKind.VOID)
+            {
+                error.reportError("Incorrect return type for main, must be void at "+md.posn);
+            }
+        }
         if(md.type.typeKind == TypeKind.VOID)
         {
             insideVoid = true;
