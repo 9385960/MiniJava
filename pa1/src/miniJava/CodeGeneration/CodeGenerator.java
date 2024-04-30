@@ -167,7 +167,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		// TODO Auto-generated method stub
 		if(fd.isStatic)
 		{
-			fd.entity = new RuntimeEntity(staticClassOffset,Reg64.R12);
+			fd.entity = new RuntimeEntity(staticClassOffset,Reg64.R15);
 			staticClassOffset += 8;
 		}else{
 			fd.entity = new RuntimeEntity(0,null);

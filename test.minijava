@@ -1,12 +1,15 @@
-/**
- * COMP 520
- * static methods and fields
- */
-class A {
-   public static void main(String[] args)
-   {
-      System.out.println(48);
-   }
+class Main {
+    public static void main(String[] args)
+    {
+        A[] a = new ArrayA();
+    }
 }
 
 
+class A{
+    
+}
+
+class ArrayA{
+
+}

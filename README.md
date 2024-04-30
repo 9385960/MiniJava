@@ -26,7 +26,7 @@ In type checking, in order to determine if an array is being assigned, I simply 
 
 ```
 class Main {
-    public static void main(string[] args)
+    public static void main(String[] args)
     {
         A[] a = new ArrayA();
     }
@@ -38,7 +38,7 @@ class A{
 }
 
 class ArrayA{
-
+    ...
 }
 
 ```
