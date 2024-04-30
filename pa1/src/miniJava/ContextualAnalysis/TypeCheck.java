@@ -94,6 +94,14 @@ public class TypeCheck implements Visitor<String,String> {
             insideVoid = true;
         }else{
             insideVoid = false;
+            //Check that last return statment returns the right type
+            Statement lastStmt = md.statementList.get(md.statementList.size()-1);
+            if(!(lastStmt instanceof ReturnStmt))
+            {
+                error.reportError("Must have return statment as the last statement in a method.");
+            }else{
+                //Must check return types match
+            }
         }
 
         for (ParameterDecl pd: md.parameterDeclList) {
@@ -102,6 +110,7 @@ public class TypeCheck implements Visitor<String,String> {
         for (Statement s: md.statementList) {
             s.visit(this, null);
         }
+
         
         return "";
     }
