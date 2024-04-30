@@ -740,10 +740,28 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitQRef(QualRef ref, Object arg) {
 		// TODO Auto-generated method stub
-		//Visit the left side of the qual ref
-		ref.ref.visit(this, (Object)false);
+		
+		
 		//Get the field declaration of the current id
 		FieldDecl decl = (FieldDecl)ref.id.decl;
+		if(decl.isStatic)
+		{
+			_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RAX,true),8*decl.indexInClass));
+			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.R15)));
+			if(arg != null)
+			{
+				if(!(boolean)arg)//Want the effective address
+				{
+					_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+				}
+			}else{
+				_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RAX,0,Reg64.RAX)));
+			}
+			_asm.add(new Push(Reg64.RAX));
+			return null;
+		}
+		//Visit the left side of the qual ref
+		ref.ref.visit(this, (Object)false);
 		//Get the value of the previous register
 		_asm.add(new Pop(Reg64.RAX));
 		//Add the current 

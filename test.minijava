@@ -1,15 +1,10 @@
 class Main {
+
+    public static int x;
+
     public static void main(String[] args)
     {
-        A[] a = new ArrayA();
+        Main.x = 48;
+        System.out.println(Main.x);
     }
-}
-
-
-class A{
-    
-}
-
-class ArrayA{
-
 }
