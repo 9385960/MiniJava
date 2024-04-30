@@ -21,6 +21,7 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	private CallPatcher patchCall = new CallPatcher();
 	private long entryPoint;
 	private int staticClassOffset = 0;
+	private MethodDecl printDecl;
 
 	public CodeGenerator(ErrorReporter errors) {
 		this._errors = errors;
@@ -31,7 +32,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		
 
 		_asm = new InstructionList();
-		patchCall.AddMethod((MethodDecl)ScopedIdentification.GetMemberDecl("_PrintStream","println"),_asm.getSize());
+		printDecl = (MethodDecl)ScopedIdentification.GetMemberDecl("_PrintStream","println");
+		patchCall.AddMethod(printDecl,_asm.getSize());
 		_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
 		makePrintln();
@@ -355,34 +357,34 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		if(stmt.methodRef instanceof IdRef)
 		{
 			MethodDecl decl = (MethodDecl)(((IdRef)stmt.methodRef).id.decl);
-			if(!decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
 				_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
 			}
 			PatchLocation location = new PatchLocation(decl,_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			if(decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
-				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
-			}else{
 				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
 			}
 			patchCall.AddToPatch(location);
 		}else if(stmt.methodRef instanceof QualRef)
 		{
 			QualRef qRef = (QualRef)stmt.methodRef;
 			MethodDecl decl = (MethodDecl)(qRef.id.decl);
-			if(!decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
 				qRef.ref.visit(this, false);
 			}
 			PatchLocation location = new PatchLocation(decl ,_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			if(decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
-				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
-			}else{
 				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
 			}
 			patchCall.AddToPatch(location);
 		}
@@ -614,17 +616,17 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		if(expr.functionRef instanceof IdRef)
 		{
 			MethodDecl decl = (MethodDecl)(((IdRef)expr.functionRef).id.decl);
-			if(!decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
 				_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
 			}
 			PatchLocation location = new PatchLocation(decl,_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			if(decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
-				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
-			}else{
 				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
 			}
 			_asm.add(new Push(Reg64.RAX));
 			patchCall.AddToPatch(location);
@@ -632,17 +634,17 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		{
 			QualRef qRef = (QualRef)expr.functionRef;
 			MethodDecl decl = (MethodDecl)(qRef.id.decl);
-			if(!decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
 				qRef.ref.visit(this, false);
 			}
 			PatchLocation location = new PatchLocation( decl,_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			if(decl.isStatic)
+			if(!decl.isStatic&&decl!=printDecl)
 			{
-				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
-			}else{
 				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
 			}
 			
 			_asm.add(new Push(Reg64.RAX));
