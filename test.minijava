@@ -7,7 +7,6 @@ class MainClass {
 
       int aa_length = 4;
       int [] aa = new int [aa_length];
-
       int i = 1;
       aa[0] = i;
       while (i < aa_length) {
@@ -19,3 +18,25 @@ class MainClass {
       System.out.println(tstvar);
    }
 }
+
+/*class MainClass {
+   public static void main (String [] args) {
+
+      int aa_length = 10;
+      int [] aa = new int [aa_length];
+
+      int i = 0;
+      while (i < aa_length) {
+          aa[i] = 48+i;
+          i = i + 1;
+      }
+      int j = 0;
+      while (j < aa_length) {
+          System.out.println(aa[j]);
+          System.out.println(10);
+          j = j + 1;
+      }
+      System.out.println(aa[9]);
+      System.out.println(10);
+   }
+}*/

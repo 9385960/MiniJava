@@ -324,7 +324,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIxAssignStmt(IxAssignStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
-		stmt.ref.visit(this, true);
+		if(stmt.ref instanceof IdRef)
+		{
+			stmt.ref.visit(this, false);
+		}else{
+			stmt.ref.visit(this, true);
+		}
+		
 		stmt.ix.visit(this,false);
 		stmt.exp.visit(this,false);
 		_asm.add(new Pop(Reg64.RAX));
@@ -564,7 +570,12 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIxExpr(IxExpr expr, Object arg) {
 		// TODO Auto-generated method stub
-		expr.ref.visit(this, true);
+		if(expr.ref instanceof IdRef)
+		{
+			expr.ref.visit(this, false);
+		}else{
+			expr.ref.visit(this, true);
+		}
 		expr.ixExpr.visit(this,false);
 		_asm.add(new Pop(Reg64.RAX));
 		_asm.add(new Pop(Reg64.RBX));
