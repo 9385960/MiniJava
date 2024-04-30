@@ -179,7 +179,13 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitMethodDecl(MethodDecl md, Object arg) {
 		// TODO Auto-generated method stub
 		currentOffset = -8;
-		paramOffset = 24;
+		if(md.isStatic)
+		{
+			paramOffset = 16;
+		}else{
+			paramOffset = 24;
+		}
+		
 		if(md.name.equals("main"))
 		{
 			if(mainFound)
@@ -220,6 +226,8 @@ public class CodeGenerator implements Visitor<Object, Object> {
 			entryPoint = _asm.getSize();
 			_asm.add(new Push(new ModRMSIB(Reg64.RBP,true)));
 			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.RBP, Reg64.RSP)));
+			makeMalloc();
+			_asm.add(new Mov_rmr(new ModRMSIB(Reg64.R15,Reg64.RAX)));
 
 		}else{
 			patchCall.AddMethod(md,_asm.getSize());
@@ -346,25 +354,36 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		}
 		if(stmt.methodRef instanceof IdRef)
 		{
-			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
-			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)stmt.methodRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
+			MethodDecl decl = (MethodDecl)(((IdRef)stmt.methodRef).id.decl);
+			if(!decl.isStatic)
+			{
+				_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
+			}
+			PatchLocation location = new PatchLocation(decl,_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			if(decl.isStatic)
+			{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}
 			patchCall.AddToPatch(location);
 		}else if(stmt.methodRef instanceof QualRef)
 		{
 			QualRef qRef = (QualRef)stmt.methodRef;
-			if(qRef.id.spelling.equals("println"))
+			MethodDecl decl = (MethodDecl)(qRef.id.decl);
+			if(!decl.isStatic)
 			{
-				PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
-				_asm.add(new Call(0));
-				patchCall.AddToPatch(location);
-				return null;
+				qRef.ref.visit(this, false);
 			}
-			qRef.ref.visit(this, false);
-			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
+			PatchLocation location = new PatchLocation(decl ,_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			if(decl.isStatic)
+			{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}
 			patchCall.AddToPatch(location);
 		}
 
@@ -594,26 +613,38 @@ public class CodeGenerator implements Visitor<Object, Object> {
 		}
 		if(expr.functionRef instanceof IdRef)
 		{
-			_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
-			PatchLocation location = new PatchLocation((MethodDecl)(((IdRef)expr.functionRef).id.decl),_asm.getCurrentIndex() ,_asm.getSize());
+			MethodDecl decl = (MethodDecl)(((IdRef)expr.functionRef).id.decl);
+			if(!decl.isStatic)
+			{
+				_asm.add(new Push(new ModRMSIB(Reg64.RBP,16)));
+			}
+			PatchLocation location = new PatchLocation(decl,_asm.getCurrentIndex() ,_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			if(decl.isStatic)
+			{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}
 			_asm.add(new Push(Reg64.RAX));
 			patchCall.AddToPatch(location);
 		}else if(expr.functionRef instanceof QualRef)
 		{
 			QualRef qRef = (QualRef)expr.functionRef;
-			if(qRef.id.spelling.equals("println"))
+			MethodDecl decl = (MethodDecl)(qRef.id.decl);
+			if(!decl.isStatic)
 			{
-				PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
-				_asm.add(new Call(0));
-				patchCall.AddToPatch(location);
-				return null;
+				qRef.ref.visit(this, false);
 			}
-			qRef.ref.visit(this, false);
-			PatchLocation location = new PatchLocation( (MethodDecl)(qRef.id.decl),_asm.getCurrentIndex(),_asm.getSize());
+			PatchLocation location = new PatchLocation( decl,_asm.getCurrentIndex(),_asm.getSize());
 			_asm.add(new Call(0));
-			_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			if(decl.isStatic)
+			{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*args.size()));
+			}else{
+				_asm.add(new Add(new ModRMSIB(Reg64.RSP,true),8*(args.size()+1)));
+			}
+			
 			_asm.add(new Push(Reg64.RAX));
 			patchCall.AddToPatch(location);
 		}
@@ -654,15 +685,26 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	@Override
 	public Object visitIdRef(IdRef ref, Object arg) {
 		// TODO Auto-generated method stub
+		if(ref.id.decl instanceof ClassDecl)
+		{
+			return null;
+		}
 		if(ref.id.decl instanceof FieldDecl)
 		{	//System.out.println("Visiting " + ref.id.spelling+" inside "+currentClass);
 			FieldDecl decl = (FieldDecl)ref.id.decl;
-			//Get this
-			_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RBP,16,Reg64.RAX)));
-			//Load Offset
-			_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX, true), 8*decl.indexInClass));
-			//Add offset to this
-			_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RBX)));
+			if(decl.isStatic)
+			{
+				_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RAX,true),8*decl.indexInClass));
+				_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.R15)));
+			}else{
+				//Get this
+				_asm.add(new Mov_rrm(new ModRMSIB(Reg64.RBP,16,Reg64.RAX)));
+				//Load Offset
+				_asm.add(new Mov_rmi(new ModRMSIB(Reg64.RBX, true), 8*decl.indexInClass));
+				//Add offset to this
+				_asm.add(new Add(new ModRMSIB(Reg64.RAX,Reg64.RBX)));
+			}
+			
 			if(arg != null)
 			{
 				if(!(boolean)arg)//Want the effective address

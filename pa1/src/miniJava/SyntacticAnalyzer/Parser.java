@@ -47,7 +47,6 @@ public class Parser {
 	private ClassDecl parseClassDeclaration() throws SyntaxError
 	{
 		nummemberfields = 0;
-		numstaticfields = 0;
 		FieldDeclList fields = new FieldDeclList();
 		MethodDeclList methods = new MethodDeclList();
 		SourcePosition position = _scanner.getCurrentToken().getTokenPosition();
