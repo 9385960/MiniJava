@@ -286,10 +286,12 @@ public class CodeGenerator implements Visitor<Object, Object> {
 	public Object visitBlockStmt(BlockStmt stmt, Object arg) {
 		// TODO Auto-generated method stub
 		_asm.add(new Mov_rmr(new ModRMSIB(Reg64.R10,Reg64.RSP)));
+		int originalOffset = currentOffset;
 		for (Statement s: stmt.sl) {
         	s.visit(this, null);
         }
         _asm.add(new Mov_rmr(new ModRMSIB(Reg64.RSP,Reg64.R10)));
+        currentOffset = originalOffset;
         return null;
 	}
 
